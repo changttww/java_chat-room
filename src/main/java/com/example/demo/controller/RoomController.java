@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.response.ResultBody;
-import com.example.demo.entity.UserCommunityRecord;
-import com.example.demo.serivce.UserCommunityRecordService;
+import com.example.demo.entity.Room;
+import com.example.demo.serivce.RoomService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,17 +14,17 @@ import javax.annotation.Resource;
 
 @Controller
 @RequestMapping("/rooms")
-public class UserCommunityRecordController {
+public class RoomController {
 
 
     @Resource
-    private UserCommunityRecordService userCommunityRecordService;
+    private RoomService roomService;
 
 
-    @PostMapping("/insertUserCommunityRecord")
+    @PostMapping("/create")
     @ResponseBody
-    public ResultBody insertUserCommunityRecord(@RequestBody UserCommunityRecord Params) {
-        return this.userCommunityRecordService.insertUserCommunityRecord(Params);
+    public ResultBody insertUserCommunityRecord(@RequestBody Room Params) {
+        return this.roomService.createRoom(Params);
     }
 
 }
