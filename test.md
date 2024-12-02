@@ -11,6 +11,7 @@
   ```json
   {
     "username": "string",
+    "id": int,
     "password": "string"
   }
   ```
