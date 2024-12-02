@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    username: root
+    password: 20011116Yang
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/chatchat
+  security:
+    filter:
+      allow-origin: http://localhost:5173
