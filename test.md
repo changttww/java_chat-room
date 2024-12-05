@@ -118,10 +118,11 @@
 - **请求参数：**
   ```json
   {
-    "roomType": "public/private/group",
-    "ownerUid": "string",
-    "maxMembers": 10
-  }
+  "roomType": "group",        // 房间类型：'public', 'private' 或 'group'
+  "roomName": "编程爱好者",    // 房间名，仅对 'public' 和 'group' 类型有效
+  "ownerUid": 1,              // 房主的用户 ID
+  "maxMembers": 50            // 最大成员数，仅对 'public' 和 'group' 类型有效
+}
   ```
 - **响应格式：**
   ```json
