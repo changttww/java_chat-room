@@ -121,19 +121,28 @@
   "roomType": "group",        // 房间类型：'public', 'private' 或 'group'
   "roomName": "编程爱好者",    // 房间名，仅对 'public' 和 'group' 类型有效
   "ownerUid": 1,              // 房主的用户 ID
-  "maxMembers": 50            // 最大成员数，仅对 'public' 和 'group' 类型有效
+  "maxMembers": 50,            // 最大成员数，仅对 'public' 和 'group' 类型有效
+  "head": 😀                 // 头像，仅对'public'和 'group'有效
 }
   ```
 - **响应格式：**
   ```json
-  {
-    "code": 200,
-    "message": "Room created successfully",
-    "data": {
-      "roomId": "string",
-      "inviteCode": "string" // 群聊专用
-    }
+{
+  "code": 200,
+  "message": "Room created successfully",
+  "data": {
+    "roomId": 1,
+    "roomName": "编程爱好者",
+    "roomType": "group",
+    "ownerUid": 1,
+    "maxMembers": 50,
+    "inviteCode": "x9a2bdf39ef517346aaa6742b2f7796d8",
+    "head": "👨‍💻",
+    "createdAt": "2024-12-05T12:34:56",
+    "updatedAt": "2024-12-05T12:34:56"
   }
+}
+
   ```
 - **说明：** 创建房间，并返回 Room ID 和邀请码（若为群聊）。
 
