@@ -120,14 +120,13 @@
   {
   "roomType": "group",        // 房间类型：'public', 'private' 或 'group'
   "roomName": "编程爱好者",    // 房间名，仅对 'public' 和 'group' 类型有效
-  "ownerUid": 1,              // 房主的用户 ID
   "maxMembers": 50,            // 最大成员数，仅对 'public' 和 'group' 类型有效
-  "head": 😀                 // 头像，仅对'public'和 'group'有效
-}
+  "head": "😀"                 // 头像，仅对'public'和 'group'有效
+  }
   ```
 - **响应格式：**
   ```json
-{
+  {
   "code": 200,
   "message": "Room created successfully",
   "data": {
@@ -140,24 +139,29 @@
     "head": "👨‍💻",
     "createdAt": "2024-12-05T12:34:56",
     "updatedAt": "2024-12-05T12:34:56"
+          }
   }
-}
+
 
   ```
 - **说明：** 创建房间，并返回 Room ID 和邀请码（若为群聊）。
+---
 
 #### **2.2 加入房间**
 - **方法类型：** POST  
 - **接口路径：** `/api/rooms/join`  
 - **请求参数：**
   ```json
+  
   {
-    "roomId": "string",
-    "inviteCode": "string" // 群聊时必填
+    "roomId": 14,
+    "uid":4,
+    "inviteCode": "string" // 群聊时才填
   }
   ```
 - **响应格式：**
   ```json
+  
   {
     "code": 200,
     "message": "Joined room successfully"

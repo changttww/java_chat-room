@@ -3,6 +3,8 @@ package com.example.chatroom.entity;
 
 import jakarta.persistence.*;
         import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "chat_user")
@@ -25,8 +27,8 @@ public class User {
     @Column(name = "head", nullable = false)
     private String head;
 
-    @Column(name = "role", nullable = false)
-    private String role;
+    @ManyToMany(mappedBy = "members")
+    private List<Room> rooms = new ArrayList<>();  // 用户加入的房间列表
 
     @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
@@ -106,7 +108,7 @@ public class User {
         return id != null ? id.hashCode() : 0;
     }
 
-    public String getRole() {
-        return role;
+    public List<Room> getRooms() {
+        return rooms;
     }
 }

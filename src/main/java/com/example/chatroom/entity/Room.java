@@ -2,6 +2,8 @@ package com.example.chatroom.entity;
 
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "chat_room")
@@ -29,6 +31,14 @@ public class Room {
 
     @Column(name = "head")
     private String head;
+
+    @ManyToMany
+    @JoinTable(
+            name = "room_member",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> members = new ArrayList<>();  // 成员列表
 
     @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
