@@ -196,13 +196,20 @@
 
 #### **3.1 发送消息**
 - **方法类型：** POST  
-- **接口路径：** `/api/messages/send`  
-- **请求参数：**
+  - **接口路径：** `/api/messages/send`  
+    - **请求参数：**
   ```json
   {
-    "roomId": "string",
-    "uid": "string",
-    "content": "string"
+  "roomId": "123",
+  "uid": "001",
+  "type": "TEXT",  // 消息类型可能是TEXT, IMAGE, EMOJI
+  "content": {
+  "text": "Hello, world!",
+  "url": null, // 图片资源的URL
+  "meta": null // 附加信息，图片宽、高等等
+  },
+  "userName":"UserA",
+  "userAvatar":"...." // 用户头像url
   }
   ```
 - **响应格式：**
@@ -228,10 +235,20 @@
     "message": "Messages fetched successfully",
     "data": [
       {
-        "roomId": "string",
-        "uid": "string",
-        "content": "string",
-        "sendTime": "timestamp"
+      "roomId": "123",
+      "uid": "001",
+      "type": "IMAGE",  // 消息类型可能是TEXT, IMAGE, EMOJI
+      "content": {
+        "text": null,
+        "url": "...", // 图片资源的URL
+        "meta":{
+          "width": 1024,
+          "height": 768
+        } // 附加信息，图片宽、高等等
+      },
+      "sendTime": "2024-11-23T10:30:00"
+      "userName":"UserA",
+      "userAvatar":"...." // 用户头像的url
       }
     ]
   }
@@ -250,18 +267,35 @@
 - **发送格式：**
   ```json
   {
-    "roomId": "string",
-    "uid": "string",
-    "content": "string"
+  "roomId": "123",
+  "uid": "001",
+  "type": "TEXT",  // 消息类型可能是TEXT, IMAGE, EMOJI
+  "content": {
+  "text": "Hello, world!",
+  "url": null, // 图片资源的URL
+  "meta": null // 附加信息，图片宽、高等等
+  },
+  "userName":"UserA",
+  "userAvatar":"...." // 用户头像url
   }
   ```
 - **接收格式：**
   ```json
   {
-    "roomId": "string",
-    "uid": "string",
-    "content": "string",
-    "sendTime": "timestamp"
+  "roomId": "123",
+  "uid": "001",
+  "type": "IMAGE",  // 消息类型可能是TEXT, IMAGE, EMOJI
+  "content": {
+        "text": null,
+        "url": "...", // 图片资源的URL
+        "meta":{
+          "width": 1024,
+          "height": 768
+        } // 附加信息，图片宽、高等等
+  },
+  "sendTime": "2024-11-23T10:30:00"
+  "userName":"UserA",
+  "userAvatar":"...." // 用户头像的url
   }
   ```
 
