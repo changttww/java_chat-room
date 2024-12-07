@@ -14,8 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -70,9 +71,41 @@ public class RoomService {
         throw new RuntimeException("User is not authenticated");
     }
 
+
+
+
     // 创建房间
     public Room createRoom(RoomDTO roomDTO) {
         Integer currentUserId = getCurrentUserId();
+
+        // 查找所有房间类型为 private 的房间
+        List<Room> privateRooms = roomRepository.findByRoomType("private");
+
+// 遍历所有私聊房间，查找符合条件的房间
+        for (Room room : privateRooms) {
+            Integer roomId = room.getRoomId();
+
+            // 获取房间成员
+            List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
+            List<Integer> memberIds = roomMembers.stream()
+                    .map(member -> member.getUser().getId())
+                    .toList();
+
+            // 判断是否符合条件
+            boolean isCurrentUserMember = memberIds.contains(currentUserId);
+            boolean isReceiverMember = memberIds.contains(roomDTO.getReceiverUid());
+
+            // 判断情况1：当前用户是创建者且唯一成员是接收者
+            if (room.getOwnerUid().equals(currentUserId) && isReceiverMember) {
+                return room; // 返回现有房间
+            }
+
+            // 判断情况2：接收者是创建者且唯一成员是当前用户
+            if (room.getOwnerUid().equals(roomDTO.getReceiverUid()) && isCurrentUserMember) {
+                return room; // 返回现有房间
+            }
+        }
+
         Room room = new Room();
         room.setOwnerUid(currentUserId);
         room.setRoomType(roomDTO.getRoomType());
@@ -80,11 +113,14 @@ public class RoomService {
         room.setMaxMembers(roomDTO.getMaxMembers());
         room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().substring(0, 8) : null);
         room.setHead(roomDTO.getHead());
+        room.setDescription(roomDTO.getDescription());
+
 
         // Save room and add the current user and receiver (if private)
         room = roomRepository.save(room);
 
         if ("private".equalsIgnoreCase(room.getRoomType())) {
+
             // Add the current user and receiver to the room
             RoomMember roomMember = new RoomMember();
             roomMember.setRoom(room);  // 设置房间
@@ -132,5 +168,226 @@ public class RoomService {
         return Response.success("User joined room successfully",null);
     }
 
+    // 查询房间详情
+    public RoomDTO getRoomDetails(Integer roomId) {
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+        RoomDTO roomDTO = new RoomDTO();
+        roomDTO.setRoomId(room.getRoomId());
+        roomDTO.setRoomType(room.getRoomType());
+        roomDTO.setOwnerUid(room.getOwnerUid());
+        roomDTO.setMaxMembers(room.getMaxMembers());
+        roomDTO.setHead(room.getHead());
+        roomDTO.setRoomName(room.getRoomName());
+        roomDTO.setInviteCode(room.getInviteCode());
+        roomDTO.setCreatedAt(room.getCreatedAt());
+        roomDTO.setUpdatedAt(room.getUpdatedAt());
+        roomDTO.setDescription(room.getDescription());
+
+        // 获取房间成员
+        List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
+
+        // 构建成员信息列表
+        List<Map<String, Object>> members = roomMembers.stream()
+                .map(member -> {
+                    Map<String, Object> memberInfo = new HashMap<>();
+                    memberInfo.put("userId", member.getUser().getId());
+                    memberInfo.put("username", member.getUser().getUsername());
+                    memberInfo.put("joinedAt", member.getJoinedAt().toString());// 转为字符串格式
+                    memberInfo.put("head", member.getUser().getHead());
+                    return memberInfo;
+                })
+                .collect(Collectors.toList());
+
+
+        roomDTO.setMembers(members); // 设置成员信息列表
+
+
+        return roomDTO;
+    }
+
+    // 离开房间
+    public String leaveRoom(Integer roomId) {
+        // 获取当前用户 ID
+        Integer currentUserId = getCurrentUserId();
+
+        // 查找房间
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+
+        // 检查用户是否是房间成员
+        Optional<RoomMember> roomMemberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, currentUserId);
+        if (roomMemberOptional.isEmpty()) {
+            throw new RuntimeException("User is not a member of the room");
+        }
+
+        // 删除用户房间成员记录
+        RoomMember roomMember = roomMemberOptional.get();
+        roomMemberRepository.delete(roomMember);
+
+        // 如果用户是房主且房间中没有其他成员，解散房间
+        if (room.getOwnerUid().equals(currentUserId) && roomMemberRepository.countByRoom_RoomId(roomId) == 0) {
+            roomRepository.delete(room); // 删除房间
+        }
+
+        return "Left room successfully";
+    }
+
+    // 删除房间
+    public String deleteRoom(Integer roomId) {
+        // 获取当前用户 ID
+        Integer currentUserId = getCurrentUserId();
+
+        // 查找房间
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+
+        // 检查是否是房主
+        if (!room.getOwnerUid().equals(currentUserId)) {
+            throw new RuntimeException("Only the room owner can delete the room");
+        }
+
+        // 删除房间成员记录
+        List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
+        roomMemberRepository.deleteAll(roomMembers);
+
+        // 删除房间
+        roomRepository.delete(room);
+
+        return "Room deleted successfully";
+    }
+
+    public void updateRoomInfo(Integer roomId,RoomDTO roomDTO) {
+        // 获取当前用户ID
+        Integer currentUserId = getCurrentUserId();
+
+        // 查找房间
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+
+        // 检查当前用户是否是房主
+        if (!room.getOwnerUid().equals(currentUserId)) {
+            throw new RuntimeException("You are not the owner of the room");
+        }
+
+        // 更新房间信息
+        if (roomDTO.getRoomName() != null) {
+            room.setRoomName(roomDTO.getRoomName());
+        }
+        if (roomDTO.getMaxMembers() != null) {
+            room.setMaxMembers(roomDTO.getMaxMembers());
+        }
+        if (roomDTO.getHead() != null) {
+            room.setHead(roomDTO.getHead());
+        }
+        if (roomDTO.getDescription() != null) {
+            room.setDescription(roomDTO.getDescription());
+        }
+
+        // 保存更新后的房间信息
+        roomRepository.save(room);
+    }
+
+    public void transferOwnership(Integer roomId, Integer newOwnerId) {
+        Integer currentUserId = getCurrentUserId();
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+
+        if (!room.getOwnerUid().equals(currentUserId)) {
+            throw new RuntimeException("Only the current owner can transfer ownership");
+        }
+
+        Optional<RoomMember> newOwnerOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, newOwnerId);
+        if (newOwnerOptional.isEmpty()) {
+            throw new RuntimeException("New owner must be a member of the room");
+        }
+
+        room.setOwnerUid(newOwnerId);
+        roomRepository.save(room);
+    }
+
+    public List<Room> searchRooms(RoomDTO roomDTO) {
+        // 查询房间名称包含关键词的房间
+        return roomRepository.findByRoomNameContaining(roomDTO.getQuery());
+    }
+
+
+    public List<Room> getMyRooms() {
+        Integer currentUserId = getCurrentUserId();
+        return roomRepository.findByOwnerUid(currentUserId);
+    }
+
+    public void removeMember(Integer roomId, Integer userId) {
+        Integer currentUserId = getCurrentUserId();
+
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+
+        if (!room.getOwnerUid().equals(currentUserId)) {
+            throw new RuntimeException("Only the owner can remove members");
+        }
+
+        Optional<RoomMember> memberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, userId);
+        if (memberOptional.isEmpty()) {
+            throw new RuntimeException("Member not found in the room");
+        }
+
+        roomMemberRepository.delete(memberOptional.get());
+    }
+
+    public void muteMember(Integer roomId, Integer userId, Integer durationMinutes) {
+        Integer currentUserId = getCurrentUserId();
+
+        Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+
+        Room room = roomOptional.get();
+
+        if (!room.getOwnerUid().equals(currentUserId)) {
+            throw new RuntimeException("Only the owner can mute members");
+        }
+
+        Optional<RoomMember> memberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, userId);
+        if (memberOptional.isEmpty()) {
+            throw new RuntimeException("Member not found in the room");
+        }
+
+        RoomMember member = memberOptional.get();
+        member.setMutedUntil(Timestamp.valueOf(LocalDateTime.now().plusMinutes(durationMinutes)));
+        roomMemberRepository.save(member);
+    }
+
+
+
+
+
 
 }
+
+

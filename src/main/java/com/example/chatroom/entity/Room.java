@@ -32,6 +32,9 @@ public class Room {
     @Column(name = "head")
     private String head;
 
+    @Column(name="description")
+    private String description;
+
     @ManyToMany
     @JoinTable(
             name = "room_member",
@@ -147,5 +150,13 @@ public class Room {
     @Override
     public int hashCode() {
         return roomId != null ? roomId.hashCode() : 0;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

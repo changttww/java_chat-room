@@ -22,4 +22,7 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Integer>
     // 根据 room_id 删除某个成员
     void deleteByRoom_RoomIdAndUserId(Integer roomId, Integer userId);
 
+    int countByRoom_RoomId(Integer roomId);
+
+    List<RoomMember> findByUser_Id(Integer currentUserId);
 }

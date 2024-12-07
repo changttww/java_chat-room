@@ -24,6 +24,9 @@ public class RoomMember implements Serializable {
     @Column(name = "joined_at", nullable = false, updatable = false)
     private Timestamp joinedAt;  // 加入时间
 
+    @Column(name = "muted_until")
+    private Timestamp mutedUntil;
+
     // Getter 和 Setter 方法
     public Integer getId() {
         return id;
@@ -80,5 +83,12 @@ public class RoomMember implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(room, user);
+    }
+
+    public void setMutedUntil(Timestamp timestamp) {
+    }
+
+    public Timestamp getMutedUntil() {
+        return mutedUntil;
     }
 }

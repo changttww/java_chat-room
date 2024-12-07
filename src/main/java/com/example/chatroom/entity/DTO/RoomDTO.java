@@ -1,6 +1,8 @@
 package com.example.chatroom.entity.DTO;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public class RoomDTO {
 
@@ -13,6 +15,9 @@ public class RoomDTO {
     private String head; // 房间头像
     private Integer ownerUid; // 房间创建者，适用于创建房间
     private Integer receiverUid; // 仅用于私聊，接收者的用户ID
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private String description;
 
     // 房间成员信息，用于加入房间
     private Integer userId;  // 用户ID，适用于加入房间的请求
@@ -20,6 +25,10 @@ public class RoomDTO {
 
     // 列表，可以包含多个用户ID，用于群聊或批量操作
     private List<Integer> userIds;
+    private List<Map<String, Object>> members; // 新增成员详细信息字段
+
+    private String query;
+
 
     // Getter 和 Setter 方法
     public Integer getRoomId() {
@@ -108,6 +117,52 @@ public class RoomDTO {
 
     public void setUserIds(List<Integer> userIds) {
         this.userIds = userIds;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<Map<String, Object>> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Map<String, Object>> members) {
+        this.members = members;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setMembersCount(int i) {
+    }
+
+    public void setJoinedAt(String string) {
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }
 
