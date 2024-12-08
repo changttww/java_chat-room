@@ -20,39 +20,57 @@
           <input type="text" class="search2-input" placeholder="请输入搜索内容">
           <button class="secondbar2-link">搜索</button>
         </div>
-        <hr>
-        <ul>
-          <li>聊天室 1</li>
-          <li>聊天室 2</li>
-          <li>聊天室 3</li>
-          <li>聊天室 4</li>
-          <li>聊天室 5</li>
-          <li>聊天室 6</li>
-          <li>聊天室 7</li>
-          <li>聊天室 8</li>
-          <li>聊天室 9</li>
-          <li>聊天室 10</li>
-          <li>聊天室 11</li>
-          <li>聊天室 12</li>
-          <li>聊天室 13</li>
-        </ul>
+        <div class="roomshow">
+          <!-- 动态生成房间列表项 -->
+          <div class="roomlist" v-for="(room, index) in rooms" :key="index" @click="clickRoom(room)">
+            <div class="roomwindow">
+              <!-- 房间头像 -->
+              <div class="roomAvater2">
+                <img :src="room.roomAvater" alt="房间头像" class="room-avatar2">
+              </div>
+              <div class="expAvater">
+                <div class="expNewmsg">
+                  <!-- 房间名 -->
+                  <div class="room-name2">{{ room.roomName }}</div>
+                  <!-- 房间标签 -->
+                  <div class="room-tag2">{{ room.roomTag }}</div>
+                  <!-- 房间人数 -->
+                  <div class="room-people-count2">{{ room.roomPeopleCount }}</div>
+                </div>
+                <!-- 最新消息 -->
+                <div class="room-latest-message2">{{ room.latestMessage }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 右侧聊天区域 -->
       <div class="chat_area">
         <!-- 上侧信息展示 -->
         <div class="chat-info">
-          信息展示
+          <div  class="room-header">
+            <img :src="roomAvater" alt="Room Avater" class="room-avatar" />
+            <div class="room-name">{{ roomName }}</div>
+          </div>
         </div>
-        <hr>
         <!-- 聊天内容区域 -->
         <div class="chat-container">
-          <!-- 消息气泡可以按需动态加载 -->
-          <div class="message-bubble left">你好，请问有什么问题吗？</div>
-          <div class="message-bubble right">你好，我想了解一下产品的情况。</div>
+          <div v-for="msg in currentRoomMsg" :key="msg.id">
+            <div :class="{ 'left': msg.userId.toString() !== currentUserId, 'right': msg.userId.toString() === currentUserId }">
+              <div class="msgThreePart">
+                <img class="msgAvater" :src="msg.userAvater">
+                <div class="nameAndBubble">
+                  <div class="msgName">{{ msg.userName }}</div>
+                  <div class="message-bubble">
+                    {{ msg.content }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <hr>
         <!-- 输入框和发送按钮 -->
         <div class="chat-input-container">
           <!-- 功能按钮区 -->
@@ -66,24 +84,156 @@
           <!-- 消息发送区 -->
           <div class="send_area">
             <textarea type="text" class="chat-input" placeholder="请输入消息..." />
-            <button class="send-button">发送</button>
+            <button class="send-button" @click="sendMessage">发送</button>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 </template>
-  
-  <script setup>
-  // 你可以在这里添加任何需要的 Vue 逻辑
-  </script>
-  
+
+<script setup>
+import { ref, computed, watch } from 'vue';
+import axios from 'axios';
+import { onMounted } from 'vue';
+
+const currentUserId = ref(null);
+// 定义响应式数据rooms，初始值先设为空数组，后续在onMounted中重新赋值
+const rooms = ref([]);
+// 定义响应式数据currentRoomId，初始值先设为null，后续在onMounted中根据情况赋值
+const currentRoomId = ref(null);
+const token = ref(null);
+const roomAvater = ref(null);  // 存储房间头像
+const roomName = ref(null);  // 存储房间名字
+const currentRoomMsg = ref([]);
+
+onMounted(async () => {
+  try {
+    currentUserId.value = localStorage.getItem('currentUserId');
+    console.log("获取当前用户id成功",currentUserId.value);
+    token.value = localStorage.getItem('token');
+    console.log("获取token成功", token.value);
+    // 从后端获取房间数据
+    const response = await axios.get('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/room-choose', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = response.data.rooms;
+    // 将获取到的房间数据赋值给rooms响应式数据
+    rooms.value = data;
+    console.log("聊天室加载成功", response.data);
+
+    currentRoomId.value=localStorage.getItem("currentRoomId");
+    console.log("跳转传递roomid：",currentRoomId.value);
+    // 判断获取到的rooms数组是否有元素，如果有则将currentRoomId设为第一个房间的roomId
+    if (rooms.value.length > 0 &&!currentRoomId.value) {
+      currentRoomId.value = rooms.value[0].roomId;
+      console.log("列表第一个房间：",currentRoomId);
+    }
+      
+    // 向后端发送请求检查房间是否存在于个人房间列表,https://fccb0fa2-e2a0-4749-8131-2c5991792be7.mock.pstmn.io/check-room-exists/${currentRoomId.value}
+    const roomExistsResponse = await axios.get(`https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/checkRoomExist/63192`);
+    const roomExists = roomExistsResponse.data.exists;
+    if (!roomExists) {
+      // 将房间添加到个人房间列表
+      const addRoomResponse = await axios.post(`https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/add-room`, {
+        roomId: currentRoomId.value,
+        userId: currentUserId
+      });
+      if (addRoomResponse.status === 201){
+        console.log("addRoom success",currentRoomId);
+      }
+    }
+
+    // 创建WebSocket连接，这里的地址需根据实际后端支持的WebSocket端点来设置
+  //   const socket = new WebSocket('ws://your-websocket-server-url');
+  //   socket.onopen = function () {
+  //     console.log('WebSocket连接已打开');
+  //   };
+  //   socket.onmessage = function (event) {
+  //     const msg = JSON.parse(event.data); // 假设后端发送的是JSON格式消息，需解析
+  //     const room = rooms.value.find((r) => r.roomId === msg.roomId);
+  //     if (room) {
+  //       room.messages.push(msg);
+  //     }
+  //   };
+  //   socket.onerror = function (error) {
+  //     console.error('WebSocket连接出错', error);
+  //   };
+  //   socket.onclose = function () {
+  //     console.log('WebSocket连接已关闭');
+  //   };
+    }
+    catch (error) {
+      console.error('获取房间信息失败', error);
+    }
+});
+
+// 在页面加载时或房间ID变化时获取房间信息
+watch(currentRoomId, async (newRoomId) => {
+  if (newRoomId) {
+    console.log("newroomid:",newRoomId);
+    try {
+      // 使用房间ID获取房间信息
+      const response1 = await axios.get(`https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/getRoomName&Avater/${newRoomId}`);
+      console.log("更新获取房间header信息成功",response1.data);
+      roomAvater.value = response1.data.roomAvater; // 假设后端返回的数据包含avatar
+      roomName.value = response1.data.roomName; // 假设后端返回的数据包含roomName
+    } catch (error) {
+      console.error('更新获取房间header信息失败', error);
+    }
+    try {
+      const responseMsg = await axios.get(`https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/getRoomMsg`);///${currentRoomId.value}
+        currentRoomMsg.value = responseMsg.data.msg;
+    } catch (error) {
+      console.error('noclick获取房间初始聊天记录失败', error);
+    }
+  }
+});
+
+
+const clickRoom = (room) => {
+  currentRoomId.value=room.roomId.toString();
+  console.log("click使房间号更改",currentRoomId.value);
+};
+
+const sendMessage = async () => {
+  const content = document.querySelector('.chat-input').value;
+  if (content) {
+    try {
+      const response1 = await axios.get('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/getuserName&Avater'); // 替换为实际的 API 地址
+      userName1.value = response1.data.userName;
+      userAvater1.value = response1.data.userAvater;
+      const response2 = await axios.post('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/sendMsg', {
+        roomId: 63192,
+        userId: 23330008,
+        type: 0,
+        content: {
+          text: "跑步好累",
+          url: null,
+          meta: null
+        },
+        sendTime: "2024-12-06T22:54:00",
+        userName: userName1,
+        userAvater:userAvater1
+      });
+      console.log('发送消息成功:', response2.data);
+    }
+    catch (error) {
+      console.log('发送消息失败');
+    }
+  }
+};
+</script>
+
   <style lang="scss">
   .home2-container {
-    height: 100vh; /* 使容器的高度等于视口的高度 */
+    height: 100vh;
+    /* 使容器的高度等于视口的高度 */
     width: 100%;
     display: flex;
+    flex: 1;
     flex-direction: column;
     background-color: #62A89B;
     /* 背景色保持一致 */
@@ -148,10 +298,11 @@
     /* 页面主体内容 */
     .home2-content {
       display: flex;
+      height: 90%;
       /* 使用 Flexbox 布局 */
       flex-direction: row;
       /* 设置 Flex 容器的子元素按垂直方向排列 */
-      //flex: 1;
+      flex: 1;
       /* 让 content 填充剩余的空间 */
       color: white;
       /* 设置字体颜色为白色 */
@@ -165,7 +316,7 @@
       /* 输入框和按钮之间的间距 */
     }
 
-    .search2-input{
+    .search2-input {
       width: 80%;
       height: 30px;
       padding: 0 10px;
@@ -175,7 +326,8 @@
       outline: none;
     }
 
-    .secondbar2-link{
+    //搜索按钮
+    .secondbar2-link {
       width: 30%;
       /* 每个按钮占 30% 宽度，保证它们均匀分布 */
       height: 30px;
@@ -188,6 +340,7 @@
       font-size: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
+
       &:hover {
         font-size: 18px;
       }
@@ -201,13 +354,20 @@
       /* 给侧边栏加一个右边框 */
       padding: 20px;
       box-sizing: border-box;
-      //height: 100%;
+      height: 100%;
     }
 
-    .chat_choose ul {
+    .roomshow {
+      //background-color: #777;
       list-style: none;
-      padding: 0;
-      margin-top: 15px;
+      max-height: 80vh;
+      /* 设置最大高度为视口高度的 80% */
+      overflow-y: auto;
+      /* 启用垂直滚动条，超出内容时可滚动 */
+    }
+
+    .roomlist {
+      list-style: none;
       max-height: 80vh;
       /* 设置最大高度为视口高度的 80% */
       overflow-y: auto;
@@ -220,27 +380,76 @@
       /* 去掉默认的列表样式 */
     }
 
-    .chat_choose li {
-      margin-bottom: 15px;
-      /* 设置每个列表项底部的外边距为 15px，确保它们之间有一定的间距 */
+    .roomwindow {
+      flex: 1;
       padding: 10px;
       /* 设置每个列表项内边距为 10px，增加点击区域，增强用户体验 */
       background-color: #d9ede0;
-      /* 设置每个列表项的背景色为浅灰色 */
-      border-radius: 8px;
-      /* 设置每个列表项的圆角半径为 8px，产生圆角效果 */
+      border-radius: 40px;
       cursor: pointer;
-      /* 鼠标悬停时显示为指针，表示该项是可点击的 */
       transition: background-color 0.3s ease;
       /* 设置背景颜色变化的过渡效果，持续 0.3 秒，呈现平滑的变化 */
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      // 房间头像样式
+      .room-avatar2 {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .expAvater {
+        display: flex;
+        /* 使用 Flexbox 布局 */
+        flex-direction: column;
+        /* 设置 Flex 容器的子元素按垂直方向排列 */
+        gap: 10px;
+      }
+
+      .expNewmsg {
+        display: flex;
+        /* 使用 Flexbox 布局 */
+        flex-direction: row;
+        /* 设置 Flex 容器的子元素按垂直方向排列 */
+        gap: 20px;
+      }
+
+      // 房间名样式
+      .room-name2 {
+        font-weight: bold;
+        flex: 1;
+      }
+
+      .room-tag2 {
+        font-size: 16px;
+      }
+
+      // 房间人数样式
+      .room-people-count2 {
+        font-size: 14px;
+        color: #777;
+      }
+
+      // 最新消息样式
+      .room-latest-message2 {
+        color: #555;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
 
-    .chat_choose li:hover {
+    .roomwindow:hover {
       background-color: #e0e0e0;
     }
 
-    .chat_area {//右侧一整个
+    .chat_area {
+      //右侧一整个
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -251,36 +460,121 @@
       width: 100%;
     }
 
-    .chat-container {//消息展示区
+    .chat-info {
+      padding: 15px;
+      background-color: #ffffff;
+      border-radius: 40px 40px 0 0; /* 上两个角设置圆角，下两个角不设置圆角 */
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .room-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .room-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .room-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .chat-container {
+      //消息展示区
       flex: 1;
-      padding: 20px;
+      padding: 10px;
       overflow-y: auto;
       background-color: #ffffff;
+      flex-direction: column;
+      /* 垂直排列子元素 */
+      //gap: 10px; /* 设置竖直间隔 */
+      display: flex;
+    }
+
+    .msgThreePart {
+      display: flex;
+      width: 100%;
+    }
+
+    .left .msgThreePart {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .right .msgThreePart {
+      display: flex;
+      flex-direction: row-reverse; // 反转水平方向布局，使元素从右到左排列
+      float: right;
+    }
+
+    .msgAvater {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    .nameAndBubble {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .right .nameAndBubble {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+    }
+
+    .msgName {
+      font-weight: bold;
+      margin-bottom: 5px;
     }
 
     .message-bubble {
-      max-width: 60%;
+      width: auto;
+      /* 设置元素的最大宽度为其父元素宽度的60%，这样可以限制消息气泡在不同屏幕宽度下不会过宽，保持合适的显示效果，避免内容撑得太开。*/
+      //max-width: 90%;
+      /* 给元素内部添加内边距，上下左右均为12px，内边距可以让消息内容在气泡内部有一定的空间，避免文字等内容紧贴着边框，提升视觉效果。*/
       padding: 12px;
+      /* 在元素的底部设置外边距为12px，使得每个消息气泡之间在垂直方向上有一定的间隔，增强页面的层次感和可读性。*/
       margin-bottom: 12px;
+      /* 设置元素的四个角为圆角，圆角半径为18px，让消息气泡的角看起来是圆润的，而不是直角，使整体外观更加柔和、美观。*/
       border-radius: 18px;
+      /* 定义元素内文字的字体大小为16px，确定文字显示的基本大小，以保证文字在合适的视觉尺度上呈现，便于阅读。*/
       font-size: 16px;
+      /* 设置行高为1.5倍字体大小，合适的行高有助于提升文字的可读性，让多行文字之间有适当的间距，不会显得过于拥挤。*/
       line-height: 1.5;
+      /* 将元素以行内块级元素的形式进行显示，这样它既具有块级元素可以设置宽高、内外边距等特性，又能像行内元素一样在一行内排列（如果空间允许），常用于布局类似聊天消息这样需要灵活排列的元素。*/
       display: inline-block;
+      /* 当元素内的文字等内容超出元素宽度时，自动进行换行，确保内容不会溢出元素边界，保证消息内容能完整显示。*/
       word-wrap: break-word;
     }
 
-    .left {
+    .left .message-bubble {
       background-color: #bfbfbf;
       color: #000;
       margin-left: 10px;
       margin-right: auto;
     }
 
-    .right {
+    .right .message-bubble {
       background-color: #9fdab8;
       color: rgb(8, 8, 8);
       margin-right: 10px;
       margin-left: auto;
+      justify-content: flex-end;
+      /* 新增：设置右浮动，确保与左消息交错 */
+      float: right;
     }
 
     .chat-input-container {
@@ -289,66 +583,99 @@
       height: 180px;
       background-color: #ffffff;
       box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 40px 40px ; /* 上两个角设置圆角，下两个角不设置圆角 */
     }
 
     .func-logo {
-      display: flex; /* 使用 flex 布局，使子元素水平排列 */
-      gap: 20px; /* 设置子元素之间的间距为 20px */
+      display: flex;
+      /* 使用 flex 布局，使子元素水平排列 */
+      gap: 20px;
+      /* 设置子元素之间的间距为 20px */
       //justify-content: center; /* 在水平方向上居中对齐子元素 */
-      align-items: center; /* 在垂直方向上居中对齐子元素 */
-      width: 100%; /* 设置容器的宽度为父元素的 100%，确保容器宽度自适应 */
-      height: 30px; /* 设置容器的高度为 30px */
-      background-color: #ffffff; /* 设置容器的背景色为 #87aca2（绿色调） */
+      align-items: center;
+      /* 在垂直方向上居中对齐子元素 */
+      width: 100%;
+      /* 设置容器的宽度为父元素的 100%，确保容器宽度自适应 */
+      height: 30px;
+      /* 设置容器的高度为 30px */
+      background-color: #ffffff;
+      /* 设置容器的背景色为 #87aca2（绿色调） */
     }
 
 
-    .func-logo > div {
-      padding: 2px; /* 给每个子元素添加一些内边距，提升点击区域 */
+    .func-logo>div {
+      padding: 2px;
+      /* 给每个子元素添加一些内边距，提升点击区域 */
       font-size: 15px;
       color: #797979;
-      background-color: #ffffff; /* 背景颜色 */
+      background-color: #ffffff;
+      /* 背景颜色 */
       //border-radius: 8px; /* 设置圆角 */
-      cursor: pointer; /* 鼠标悬停时显示为指针 */
+      cursor: pointer;
+      /* 鼠标悬停时显示为指针 */
     }
 
-    .func-logo > div:hover {
-      background-color: #e0e0e0; /* 鼠标悬停时改变背景颜色 */
+    .func-logo>div:hover {
+      background-color: #e0e0e0;
+      /* 鼠标悬停时改变背景颜色 */
     }
 
 
     .chat-input {
-      flex: 1; /* 让输入框占据父容器中剩余的空间 */
-      height: 140px; /* 设置输入框的高度为 40px */
+      flex: 1;
+      /* 让输入框占据父容器中剩余的空间 */
+      height: 140px;
+      /* 设置输入框的高度为 40px */
       width: 1100px;
-      padding: 2px 15px 5px 10px; /* 设置左右内边距为 15px，使输入框内容不贴边 */
-      border: 1px solid #ffffff; /* 设置边框为 1px 宽，颜色为浅灰色（#ddd） */
-      font-size: 16px; /* 设置输入框字体大小为 16px */
-      outline: none; /* 移除输入框聚焦时的默认轮廓（边框阴影） */
-      transition: border-color 0.3s ease; /* 设置边框颜色的平滑过渡效果 */
-      white-space: pre-wrap; /* 保证换行符被正确显示 */
-      word-wrap: break-word; /* 使超出宽度的内容自动换行 */
-      line-height: 1.5; /* 设置行高，以改善文本显示 */
+      padding: 2px 15px 5px 10px;
+      /* 设置左右内边距为 15px，使输入框内容不贴边 */
+      border: 1px solid #ffffff;
+      /* 设置边框为 1px 宽，颜色为浅灰色（#ddd） */
+      font-size: 16px;
+      /* 设置输入框字体大小为 16px */
+      outline: none;
+      /* 移除输入框聚焦时的默认轮廓（边框阴影） */
+      transition: border-color 0.3s ease;
+      /* 设置边框颜色的平滑过渡效果 */
+      white-space: pre-wrap;
+      /* 保证换行符被正确显示 */
+      word-wrap: break-word;
+      /* 使超出宽度的内容自动换行 */
+      line-height: 1.5;
+      /* 设置行高，以改善文本显示 */
+      border-radius: 0 0 0 40px;
     }
 
     .chat-input:focus {
-      border-color: #5da877; /* 当输入框获得焦点时，边框颜色变为蓝色 (#0084FF) */
+      //border-color: #5da877;
+      /* 当输入框获得焦点时，边框颜色变为蓝色 (#0084FF) */
     }
 
     .send-button {
-      background-color: rgb(249, 250, 250); /* 设置按钮的背景颜色为蓝色 (#0084FF) */
-      color: #5da877; /* 设置按钮文字颜色为白色 */
-      font-size: 16px; /* 设置按钮文字大小为 16px */
-      padding: 10px 20px; /* 设置按钮的内边距，上下 10px，左右 20px */
-      border: none; /* 去掉按钮的边框 */
-      border-radius: 20px; /* 设置按钮的圆角为 20px，使按钮边缘圆滑 */
-      cursor: pointer; /* 设置鼠标悬停时，按钮显示为指针，表示可以点击 */
-      margin-right: 10px; /* 设置按钮与输入框之间的左外边距为 10px，提供一些间隔 */
+      background-color: rgb(249, 250, 250);
+      /* 设置按钮的背景颜色为蓝色 (#0084FF) */
+      color: #5da877;
+      /* 设置按钮文字颜色为白色 */
+      font-size: 16px;
+      /* 设置按钮文字大小为 16px */
+      padding: 10px 20px;
+      /* 设置按钮的内边距，上下 10px，左右 20px */
+      border: none;
+      /* 去掉按钮的边框 */
+      border-radius: 20px;
+      /* 设置按钮的圆角为 20px，使按钮边缘圆滑 */
+      cursor: pointer;
+      /* 设置鼠标悬停时，按钮显示为指针，表示可以点击 */
+      margin-right: 10px;
+      /* 设置按钮与输入框之间的左外边距为 10px，提供一些间隔 */
       margin-bottom: 10px;
-      transition: background-color 0.3s ease; /* 设置按钮背景颜色的平滑过渡效果 */
+      transition: background-color 0.3s ease;
+      /* 设置按钮背景颜色的平滑过渡效果 */
     }
 
     .send-button:hover {
-      background-color: #e0e0e0; /* 鼠标悬停时，按钮背景颜色变为深蓝色 (#005bb5) */
+      background-color: #e0e0e0;
+      /* 鼠标悬停时，按钮背景颜色变为深蓝色 (#005bb5) */
     }
   }
 </style>

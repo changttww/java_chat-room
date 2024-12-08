@@ -1,6 +1,3 @@
-<!-- import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-import axios from "axios"; -->
 <template>
   <div class="login-container">
       <!-- 顶栏 -->
@@ -37,15 +34,15 @@ import axios from "axios"; -->
         <div class="title">开始 </div>
         <div class="subtitle">注册你的账户</div>
         <div class="inputf">
-          <input type="text" v-model="username" placeholder="用户名" />
+          <input type="text" v-model="inputUsername" placeholder="用户名" />
           <span class="label">用户名</span>
         </div>
         <div class="inputf">
-          <input type="text" v-model="id" placeholder="账号" />
+          <input type="text" v-model="inputId" placeholder="账号" />
           <span class="label">帐号</span>
         </div>
         <div class="inputf">
-          <input type="password" v-model="password" placeholder="密码" />
+          <input type="password" v-model="inputPassword" placeholder="密码" />
           <span class="label">密码</span>
         </div>
         <button @click="register">注册</button>
@@ -72,16 +69,17 @@ import axios from "axios"; -->
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'; // 引入 useRouter
 import axios from 'axios';
+import store from '@/store/index.js';
 
 // 路由实例
 const router = useRouter();
 
 // 状态管理
 const active = ref(1); // 控制表单的切换
-const username = ref(""); // 用户名
-const id = ref(""); // 账号
-const password = ref(""); // 密码
-const loginId = ref(""); // 登录账号
+const inputUsername = ref(""); // 用户名
+const inputId = ref(null); // 账号
+const inputPassword = ref(""); // 密码
+const loginId = ref(null); // 登录账号
 const loginPassword = ref(""); // 登录密码
 
 // 控制登录和注册的成功/失败提示
@@ -105,28 +103,20 @@ const showMessage = (text, type) => {
 // 注册请求
 const register = async () => {
   try {
-    const response = await axios.post('https://fccb0fa2-e2a0-4749-8131-2c5991792be7.mock.pstmn.io/register', {
-      username: username.value,
-      id: id.value,
-      password: password.value,
+    const response = await axios.post('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/register', {
+      username: inputUsername.value,
+      userId: inputId.value,
+      password: inputPassword.value,
     });
     console.log('注册成功:', response.data);
     showMessage("注册成功", "success");
-    // 跳转到 /home
-    router.push('/home');
+    // 改为切换到登录卡片，即将active设置为1
+    active.value = 1;;
+    inputUsername.value = "";
+    inputId.value = "";
+    inputPassword.value = "";
   } 
   catch (error) {
-    // // 后端返回注册失败，根据 error.response 判断具体失败原因
-    // if (error.response) {
-    //   const errorMsg = error.response.data.message;
-    //   console.error('注册失败:', errorMsg);
-
-    //   // 弹出错误提示（用户名重复或 ID 重复）
-    //   //ElMessageBox.alert(errorMsg, '注册失败');
-    // } 
-    // else {
-    //   console.error('网络或服务器错误:', error);
-    // }
     console.log('注册失败');
     showMessage("注册失败", "error");
   }
@@ -135,28 +125,20 @@ const register = async () => {
 // 登录请求
 const login = async () => {
   try {
-    const response = await axios.post('https://fccb0fa2-e2a0-4749-8131-2c5991792be7.mock.pstmn.io/login', {
-      id: id.value,
-      password: password.value,
+    const response = await axios.post('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/login', {
+      userId: loginId.value,
+      password: loginPassword.value,
     });
     console.log('登录成功:', response.data);
     showMessage("登录成功", "success");
-
-    // 跳转到 /home
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('currentUserId', loginId.value);
+    console.log("登录id：",loginId.value);
+    loginId.value = "";
+    loginPassword.value = "";
     router.push('/home');
   } 
   catch (error) {
-    // // 后端返回注册失败，根据 error.response 判断具体失败原因
-    // if (error.response) {
-    //   const errorMsg = error.response.data.message;
-    //   console.error('注册失败:', errorMsg);
-
-    //   // 弹出错误提示（用户名重复或 ID 重复）
-    //   //ElMessageBox.alert(errorMsg, '注册失败');
-    // } 
-    // else {
-    //   console.error('网络或服务器错误:', error);
-    // }
     console.log('登录失败');
     showMessage("登录失败", "error");
   }

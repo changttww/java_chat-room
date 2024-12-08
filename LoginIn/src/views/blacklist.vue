@@ -49,7 +49,7 @@
   }
   /* 顶栏样式 */
   .topbar4 {
-    background-color: rgba(78, 124, 114, 0.75); /* 与 card 颜色一致 */
+    background-color: rgb(83, 135, 124); /* 与 card 颜色一致 */
     padding: 15px;
     width: 100%;
     box-sizing: border-box;
