@@ -20,6 +20,10 @@ public class Response<T> {
         return new Response<>(500, message, null);  // 错误响应，状态码为 500
     }
 
+    public static Response<Void> success(String message) {
+        return success(message,null);
+    }
+
     public String getMessage() {
         return message;
     }
