@@ -1,46 +1,4 @@
-// import { createRouter, createWebHistory } from 'vue-router'
-// import Home from '../views/Home.vue'
-// import loginin from '../views/loginin.vue';
 
-
-// const router = createRouter({
-//   history: createWebHistory(import.meta.env.BASE_URL),
-//   routes: [
-//     {
-//       path: '/about',
-//       name: 'about',
-//       // route level code-splitting
-//       // this generates a separate chunk (About.[hash].js) for this route
-//       // which is lazy-loaded when the route is visited.
-//       component: () => import('../views/AboutView.vue'),
-//     },
-//     {
-//       path: '/',
-//       name: 'loginIn',
-      
-//       component: () => import('../views/loginin.vue'),
-//     },
-//     {
-//       path: '/home',
-//       name: 'Home',
-      
-//       component: () => import('../views/Home.vue'),
-//     },
-//     {
-//       path: '/chat',
-//       name: 'chat',
-      
-//       component: () => import('../views/chat.vue'),
-//     },
-//     {
-//       path: '/own',
-//       name: 'own',
-      
-//       component: () => import('../views/own.vue'),
-//     },
-//   ],
-// })
-// export default router;
 
 
 import { createRouter, createWebHistory } from 'vue-router';
@@ -66,6 +24,7 @@ const routes = [
     path: '/chat',
     name: 'chat',
     component: chat, // 替换为你的主页组件
+    props: (route) => ({ roomId: route.query.roomId })
   },
   {
     path: '/own',

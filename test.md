@@ -6,12 +6,12 @@
 
 #### **1.1 用户注册**
 - **方法类型：** POST  
-- **接口路径：** `/api/users/register`  
+- **接口路径：** `@/register`  
 - **请求参数：**
   ```json
   {
-    "username": "string",
-    "id": int,
+    "userName": "string",
+    "userId": int,
     "password": "string"
   }
   ```
@@ -19,21 +19,17 @@
   ```json
   {
     "code": 200,
-    "message": "Registration successful",
-    "data": {
-      "uid": "string"
-    }
+    "msg": "Registration successful"
   }
-  ```
-- **说明：** 创建新用户，生成唯一的 UID。
+  ``
 
 #### **1.2 用户登录**
 - **方法类型：** POST  
-- **接口路径：** `/api/users/login`  
+- **接口路径：** `@/login`  
 - **请求参数：**
   ```json
   {
-    "username": "string",
+    "userId": int,
     "password": "string"
   }
   ```
@@ -41,9 +37,9 @@
   ```json
   {
     "code": 200,
-    "message": "Login successful",
+    "msg": "Login successful",
     "data": {
-      "token": "string"
+         "token": "string"
     }
   }
   ```
@@ -51,33 +47,37 @@
 
 #### **1.3 获取用户信息**
 - **方法类型：** GET  
-- **接口路径：** `/api/users/{uid}`  
+- **接口路径：** `/own`  
 - **请求参数：**
-  - Path 参数：`uid`（用户唯一 ID）
+  - headers: {
+        'Authorization': `Bearer ${token}`
+    }
 - **响应格式：**
   ```json
   {
     "code": 200,
     "message": "User info fetched successfully",
     "data": {
-      "uid": "string",
-      "username": "string",
-      "avatar": "string",
-      "friends": ["uid1", "uid2"],
-      "blacklist": ["uid3"]
+      "userId": int,
+      "userName": "string",
+      "userAvatar": "url",
+      "blacklist": [uid3]
     }
   }
   ```
 - **说明：** 查询用户详细信息。
 
 #### **1.4 更新用户信息**
-- **方法类型：** PUT  
-- **接口路径：** `/api/users/{uid}`  
+- **说明：** 更新用户的头像。
+- **方法类型：** PATCH
+- **接口路径：** `@/upload-avatar`  
 - **请求参数：**
   ```json
   {
-    "username": "string",
-    "avatar": "string"
+    headers: {
+        'Authorization': `Bearer ${token}`
+    },
+    "userAvatar":"url"
   }
   ```
 - **响应格式：**
@@ -87,16 +87,53 @@
     "message": "User info updated successfully"
   }
   ```
-- **说明：** 更新用户的基本信息。
+- **说明：** 更新用户的用户名。
+- - **方法类型：** PATCH
+- **接口路径：** `@/upload-username`  
+- **请求参数：**
+  ```json
+  {
+    headers: {
+        'Authorization': `Bearer ${token}`
+    },
+    "newUsername": "string"
+  }
+  ```
+- **响应格式：**
+  ```json
+  {
+    "code": 200,
+    "message": "User info updated successfully"
+  }
+  ```
+- **说明：** 更新用户的密码。
+- - **方法类型：** PUT  
+- **接口路径：** `/api/users/{uid}`  
+- **请求参数：**
+  ```json
+  {
+    headers: {
+        'Authorization': `Bearer ${token}`
+    },
+    "newPassword": "string"
+  }
+  ```
+- **响应格式：**
+  ```json
+  {
+    "code": 200,
+    "message": "User info updated successfully"
+  }
+  ```
 
 #### **1.5 更新黑名单**
 - **方法类型：** PUT  
-- **接口路径：** `/api/users/{uid}/blacklist`  
+- **接口路径：** `@/blacklist`  
 - **请求参数：**
   ```json
   {
     "action": "add/remove",
-    "targetUid": "string"
+    "target-userId": int
   }
   ```
 - **响应格式：**
@@ -116,19 +153,17 @@
 
 #### **2.1. 创建房间**
 - **方法类型：** POST
-- **接口路径：** `/api/rooms/create`
-- **描述：** 创建新房间（支持私聊、群聊、公聊）。
+- **接口路径：** `@/createRoom`
+- **描述：** 创建新房间（支持私聊、群聊）。
 
 **请求参数：**
 ```json
 {
-  "roomType": "group",         // 房间类型：'public', 'private', 'group'
-  "roomName": "编程爱好者",     // 房间名称，仅对 'public' 和 'group' 类型有效
-  "maxMembers": 50,            // 最大成员数，仅对 'public' 和 'group' 类型有效
-  "head": "😀",                // 房间头像，仅对 'public' 和 'group' 类型有效
-  "tags": ["编程", "技术"],
-  "description": "编程爱好者的交流社区",
-  "receiverUid": 2             // 私聊时接收者用户 ID，仅对 'private' 类型有效
+  "roomType": "public/private",       
+  "roomName": "string",   
+  "roomAvatar": "url",    
+  "roomTag": "string",
+  "roomId": int
 }
 ```
 
@@ -136,29 +171,7 @@
 ```json
 {
   "code": 200,
-  "message": "Room created successfully",
-  "data": {
-    "roomId": 41,
-    "roomName": "编程爱好者",
-    "roomType": "group",
-    "ownerUid": 1,
-    "maxMembers": 50,
-    "inviteCode": "2f48371d",
-    "head": "😀",
-    "description": "编程爱好者的交流社区",
-    "roomTags": [
-      {
-        "id": 13,
-        "tag": "编程"
-      },
-      {
-        "id": 14,
-        "tag": "技术"
-      }
-    ],
-    "createdAt": "2024-12-09T15:37:24.050+00:00",
-    "updatedAt": "2024-12-09T15:37:24.050+00:00"
-  }
+  "message": "Room created successfully"
 }
 ```
 
@@ -166,7 +179,7 @@
 
 #### **2.2. 查询房间详情**
 - **方法类型：** GET
-- **接口路径：** `/api/rooms/{roomId}`
+- **接口路径：** `@getRoomInfo/{roomId}`
 - **描述：** 获取房间的详细信息。
 
 **请求参数：**
@@ -178,27 +191,22 @@
   "code": 200,
   "message": "Room details fetched successfully",
   "data": {
-    "roomId": 1,
-    "roomName": "编程爱好者",
-    "roomType": "group",
-    "ownerUid": 1,
+    "roomId": int,
+    "roomName": "string",
+    "roomType": "public/private",
+    "ownerId": int,
     "members": [
       {
-        "userId": 1,
-        "username": "admin",
-        "head": "👨‍💻",
-        "joinedAt": "2024-12-07T12:05:00",
-        "description": "编程爱好者的交流社区"
+        "userId": int,
+        "username": "string",
+        "head": "url"
       },
       {
-        "userId": 2,
-        "username": "user1",
-        "head": "😀",
-        "joinedAt": "2024-12-07T12:10:00",
-        "description": ""
+        "userId": int,
+        "username": "string",
+        "head": "url"
       }
-    ],
-    "maxMembers": 50
+    ]
   }
 }
 
@@ -214,6 +222,9 @@
 **请求参数：**
 ```json
 {
+  headers: {
+     'Authorization': `Bearer ${token}`
+  },
   "roomId": 1,
   "inviteCode": "x9a2bdf3" // 群聊时才需要
 }
@@ -284,8 +295,9 @@
 
 ---
 
+---
 
-#### **2.7. 搜索房间**
+#### **2.8. 搜索房间**
 - **方法类型：** GET
 - **接口路径：** `/api/rooms/search`
 - **描述：** 按房间名称或类型搜索房间。
@@ -294,7 +306,7 @@
 ```json
 {
   "query": "编程",
-  "tags": ["编程", "技术"] \\ 可选参数
+  "roomType": "group"
 }
 ```
 
@@ -317,117 +329,139 @@
 
 ---
 
-
-
-### **附加功能接口**
-
-#### **2.8. 获取我的房间**
+#### **2.9. 获得6个推荐房间
 - **方法类型：** GET
-- **接口路径：** `/api/rooms/my-rooms`
-- **描述：** 查询当前用户创建的所有房间。
+- **接口路径：** `@/get6rooms`
+
+**请求参数：**
+
 
 **响应格式：**
 ```json
-
 {
   "code": 200,
   "message": "Rooms fetched successfully",
-  "data": [
-    {
-      "roomId": 13,
-      "roomName": "编程爱好者",
-      "roomType": "group",
-      "ownerUid": 1,
-      "maxMembers": 50,
-      "inviteCode": "x9a2bdf39ef517346aaa6742b2f7796d8",
-      "head": "👨‍💻",
-      "description": null,
-      "createdAt": "2024-12-05T18:32:39.000+00:00",
-      "updatedAt": "2024-12-05T18:32:39.000+00:00"
-    },
-    {
-      "roomId": 24,
-      "roomName": "新房间名称",
-      "roomType": "group",
-      "ownerUid": 1,
-      "maxMembers": 100,
-      "inviteCode": "03c0102a",
-      "head": "👾",
-      "description": "更新后的描述",
-      "createdAt": "2024-12-05T20:03:54.000+00:00",
-      "updatedAt": "2024-12-05T20:03:54.000+00:00"
+  "data": {
+      "rooms": [
+        {
+            "avatarUrl": "url",
+            "roomName": "string",
+            "roomId": int,
+            "roomTag": "string",
+            "onlineCount": int
+        },
+      ]
+  }
+}
+```
+---
+#### **2.10. 获得全部标签
+- **方法类型：** GET
+- **接口路径：** `@/tags`
+
+**请求参数：**
+
+
+**响应格式：**
+```json
+{
+  "code": 200,
+  "message": "Rooms fetched successfully",
+  "data": {
+      "tags": [
+        {
+            "tagname": "string",
+            "color": "#E4080A"  (每次有新tag时随机生成一个颜色）
+        },
+      ]
+}
+```
+---
+#### **2.11. 获得用户所有加入房间的基本信息
+- **方法类型：** GET
+- **接口路径：** `@/room-choose`
+
+**请求参数：**
+  ```json
+  {
+    headers: {
+        'Authorization': `Bearer ${token}`
     }
-    ]
-}
-  
-```
-
----
-
-#### **2.9. 转让房主**
-- **方法类型：** POST
-- **接口路径：** `/api/rooms/{roomId}/transfer-ownership`
-- **描述：** 将房主权限转让给其他成员。
-
-**请求参数：**
-```json
-{
-  "newOwnerId": 2
-}
-```
-
+  }
+  ```
 **响应格式：**
 ```json
 {
   "code": 200,
-  "message": "Ownership transferred successfully"
+  "message": "Rooms fetched successfully",
+  "data": {
+      "rooms": [
+        {
+            "avatarUrl": "url",
+            "roomName": "string",
+            "roomId": int,
+            "roomTag": "string",
+            "onlineCount": int
+        },
+      ]
+  }
 }
 ```
-
 ---
-#### **2.10. 踢出成员**
-- **方法类型：** POST
-- **接口路径：** `/api/rooms/{roomId}/remove-member`
-- **描述：** 移除指定成员。
+#### **2.12. 获取20个推荐房间标签
+- **方法类型：** GET
+- **接口路径：** `@/sugTags`
 
 **请求参数：**
-```json
-{
-  "userId": 3
-}
-```
-
+ 
 **响应格式：**
 ```json
 {
   "code": 200,
-  "message": "Member removed successfully"
+  "message": "Rooms fetched successfully",
+  "data": {
+      "sugTags": [
+        {
+            "tagname": "string",
+            "color": "string"
+        },
+        {
+            "tagname": "string",
+            "color": "string"
+        },
+      ]
+  }
 }
 ```
-
-#### **2.11. 禁言成员**
-- **方法类型：** POST
-- **接口路径：** `/api/rooms/{roomId}/mute-member`
-- **描述：** 禁言房间中的某成员。
+---
+#### **2.13. 通过标签获得房间
+- **方法类型：** GET
+- **接口路径：** `@/getRoomsByTag`
 
 **请求参数：**
-```json
-{
-  "userId": 3,
-  "durationMinutes": 30
-}
-```
-
+ {
+     "tag":"string"
+  }
 **响应格式：**
 ```json
 {
   "code": 200,
-  "message": "Member muted successfully"
+  "message": "Rooms fetched successfully",
+  "data": {
+      "rooms": [
+        {
+            "roomAvatar": "url",
+            "roomName": "string",
+            "roomId": int,
+            "roomTag": "string",
+            "roomPeopleCount": int,
+            "latestMsg": "string",
+            "latestMsgTime":"string"
+        },
+      ]
+  }
 }
 ```
-
----
-
 以上设计包含房间管理、成员管理、权限控制等核心功能，提升了聊天室的完整性和用户体验。
 
 ### **3. 消息管理模块**

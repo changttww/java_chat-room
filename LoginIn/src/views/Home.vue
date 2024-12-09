@@ -14,143 +14,165 @@
 
     <hr>
 
-    <!-- 副栏 -->
-    <div class="secondbar">
-      <div class="secondbar-content">
-        <div class="secondbar-links">
-          <button class="secondbar-link" @click="showModal = true">创建房间</button>
-          <button class="secondbar-link" @click="showTagModal = true">标签分类</button>
+    <div class="main-container">
 
+      <!-- 全部标签弹窗 -->
+      <!-- 在弹窗中动态渲染标签按钮 -->
+      <div v-if="showTagModal" class="modal-overlay2">
+        <div class="modal-content2">
+          <h3>全部标签</h3>
+          <div class="tags-container">
+            <button class="tag-btn" v-for="(tag, index) in tags" :key="index" :style="{ backgroundColor: tag.color }"
+              @click="handleTagClick(tag.tagname)">
+              {{ tag.tagname }}
+            </button>
+          </div>
+          <button class="modal-close" @click="showTagModal = false">关闭</button>
+        </div>
+      </div>
 
-          <!-- 搜索输入框和按钮 -->
-          <div class="search-container">
-            <input type="text" class="search-input" placeholder="请输入搜索内容">
-            <button class="secondbar-link">搜索</button>
+      <!-- 标签房间弹窗 -->
+      <div v-if="showTagRoomModal" class="modal-overlay3">
+        <div class="modal-content3">
+          <h3>{{ currentTag }}</h3>
+          <div class="tagRooms">
+            <div class="group_sug2" v-for="(room, index) in tagRoomsData" :key="index" @click="group_sug1Click(room)">
+              <!-- 房间头像 -->
+              <!-- <div class="grp2_img"> -->
+              <img :src="room.roomAvater || defaultAvatar" alt="房间头像" class="room-avatar2">
+              <!-- </div> -->
+              <div class="NCMT">
+                <div class="NC">
+                  <!-- 房间名称 -->
+                  <div class="room-name2">{{ room.roomName }}</div>
+                  <!-- 在线人数 -->
+                  <div class="room-online2">{{ room.roomPeopleCount }} </div>
+                </div>
+                <div class="MT">
+                  <div class="room-lastMsg">{{ room.latestMsg }}</div>
+                  <div class="lastMsgTime">{{ room.latestMsgTime }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="modal-close" @click="showTagRoomModal = false">关闭</button>
+        </div>
+      </div>
+
+      <!-- 创建房间弹窗 -->
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal-content">
+          <h3>创建房间</h3>
+          <!-- 房间头像 -->
+          <div class="avatar-section2">
+            <img :src="avatar2Url || defaultAvatar" alt="头像" class="avatar2">
+            <input type="file" @change="uploadAvatar" />
+          </div>
+          <form @submit.prevent="createRoom">
+            <!-- 房间号 -->
+            <div>
+              <label>房间号：</label>
+              <span>{{ roomId }}</span>
+            </div>
+
+            <!-- 房间名 -->
+            <div>
+              <label>房间名：</label>
+              <input type="text" v-model="roomName" required />
+            </div>
+
+            <!-- 标签 -->
+            <div>
+              <label>标签：</label>
+              <input type="text" v-model="roomTag" />
+            </div>
+
+            <!-- 属性选择 -->
+            <div>
+              <label>属性：</label>
+              <label>
+                <input type="radio" value="public" v-model="roomType" /> 公开
+              </label>
+              <label>
+                <input type="radio" value="private" v-model="roomType" /> 私密
+              </label>
+            </div>
+
+            <!-- 按钮 -->
+            <div class="modal-buttons">
+              <button type="submit">确认</button>
+              <button type="button" @click="closeModal">取消</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="lefttwo">
+        <!-- 页面主体内容 -->
+        <div class="home-content">
+          <div class="container">
+            <div class="top-container1">
+              <!-- 根据后台标签数实时查询，将房间数最多的10个标签，设置为按钮 -->
+              <!-- 10个大小不一的彩色按钮 -->
+              <button class="random-btn" style="top: 20px; left: 230px"></button>
+              <button class="random-btn" style="top: 50px; left: 750px"></button>
+              <button class="random-btn" style="top: 100px; left: 380px"></button>
+              <button class="random-btn" style="top: 120px; left: 1100px"></button>
+              <button class="random-btn" style="top: 170px; left: 500px"></button>
+              <button class="random-btn" style="top: 280px; left: 800px"></button>
+              <button class="random-btn" style="top: 240px; left: 150px"></button>
+              <button class="random-btn" style="top: 150px; left: 750px"></button>
+              <button class="random-btn" style="top: 480px; left: 780px"></button>
+              <button class="random-btn" style="top: 80px; left: 600"></button>
+            </div>
+            <div class="top-container2">
+              <!-- 复制按钮，使得循环更加无缝 -->
+              <button class="random-btn" style="top: 20px; left: 230px"></button>
+              <button class="random-btn" style="top: 50px; left: 950px"></button>
+              <button class="random-btn" style="top: 100px; left: 380px"></button>
+              <button class="random-btn" style="top: 220px; left: 1100px"></button>
+              <button class="random-btn" style="top: 170px; left: 500px"></button>
+              <button class="random-btn" style="top: 280px; left: 300px"></button>
+              <button class="random-btn" style="top: 440px; left: 650px"></button>
+              <button class="random-btn" style="top: 150px; left: 750px"></button>
+              <button class="random-btn" style="top: 480px; left: 780px"></button>
+              <button class="random-btn" style="top: 80px; left: 600"></button>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-container">
+          <!-- 新添加的图片容器 -->
+          <div class="image-container">
+            <img :src="'/images/ENFP-竞选者.png'" alt="Image" class="image-content">
+          </div>
+
+          <div class="group_sug1" v-for="(room, index) in rooms" :key="index" @click="group_sug1Click(room)">
+            <!-- 房间头像 -->
+            <div class="grp1_img">
+              <img :src="room.avatarUrl || defaultAvatar" alt="房间头像" class="room-avatar">
+            </div>
+
+            <!-- 房间名称 -->
+            <div class="room-name">{{ room.roomName }}</div>
+
+            <!-- 房间标签 -->
+            <div class="room-tag">{{ room.roomTag }}</div>
+
+            <!-- 在线人数 -->
+            <div class="room-online">{{ room.onlineCount }} 在线</div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- 全部标签弹窗 -->
-     <!-- 在弹窗中动态渲染标签按钮 -->
-    <div v-if="showTagModal" class="modal-overlay2">
-      <div class="modal-content2">
-        <h3>全部标签</h3>
-        <div class="tags-container">
-          <button
-            class="tag-btn"
-            v-for="(tag, index) in tags"
-            :key="index"
-            :style="{ backgroundColor: tag.color }"
-            @click="console.log('tag.tagname:', tag.tagname); console.log('tag.color:', tag.color)"
-          >
-          {{ tag.tagname }}
-          </button>
-        </div>
-        <button class="modal-close" @click="showTagModal = false">关闭</button>
-      </div>
-    </div>
-
-    <!-- 创建房间弹窗 -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="modal-content">
-        <h3>创建房间</h3>
-        <!-- 房间头像 -->
-        <div class="avatar-section2">
-          <img :src="avatar2Url || defaultAvatar" alt="头像" class="avatar2">
-          <input type="file" @change="uploadAvatar" />
-        </div>
-        <form @submit.prevent="createRoom">
-          <!-- 房间号 -->
-          <div>
-            <label>房间号：</label>
-            <span>{{ roomId }}</span>
-          </div>
-
-          <!-- 房间名 -->
-          <div>
-            <label>房间名：</label>
-            <input type="text" v-model="roomName" required />
-          </div>
-
-          <!-- 标签 -->
-          <div>
-            <label>标签：</label>
-            <input type="text" v-model="roomTag" />
-          </div>
-
-          <!-- 属性选择 -->
-          <div>
-            <label>属性：</label>
-            <label>
-              <input type="radio" value="public" v-model="roomType" /> 公开
-            </label>
-            <label>
-              <input type="radio" value="private" v-model="roomType" /> 私密
-            </label>
-          </div>
-
-          <!-- 按钮 -->
-          <div class="modal-buttons">
-            <button type="submit">确认</button>
-            <button type="button" @click="closeModal">取消</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- 页面主体内容 -->
-    <div class="home-content">
-      <div class="container">
-        <div class="top-container1">
-          <!-- 根据后台标签数实时查询，将房间数最多的10个标签，设置为按钮 -->
-          <!-- 10个大小不一的彩色按钮 -->
-          <button class="random-btn" style="top: 20px; left: 30px; background-color: #6A5ACD">Kpop</button>
-          <button class="random-btn" style="top: 50px; left: 1050px;background-color: red">第五人格</button>
-          <button class="random-btn" style="top: 100px; left: 380px;background-color: royalblue">原</button>
-          <button class="random-btn" style="top: 120px; left: 1400px;background-color: gold">jazz</button>
-          <button class="random-btn" style="top: 170px; left: 500px;background-color: greenyellow">hpop</button>
-          <button class="random-btn" style="top: 280px; left: 300px;background-color: hotpink">小说</button>
-          <button class="random-btn" style="top: 240px; left: 1250px;background-color: paleturquoise">塔</button>
-          <button class="random-btn" style="top: 150px; left: 50px;background-color: salmon">手账</button>
-          <button class="random-btn" style="top: 180px; left: 780px;background-color: cadetblue">新疆旅游</button>
-          <button class="random-btn" style="top: 80px; left: 600px;background-color: firebrick">国际政治</button>
-        </div>
-        <div class="top-container2">
-          <!-- 复制按钮，使得循环更加无缝 -->
-          <button class="random-btn" style="top: 20px; left: 30px; background-color: #6A5ACD">Kpop</button>
-          <button class="random-btn" style="top: 50px; left: 1050px;background-color: red">第五人格</button>
-          <button class="random-btn" style="top: 100px; left: 380px;background-color: royalblue">原</button>
-          <button class="random-btn" style="top: 120px; left: 1400px;background-color: gold">jazz</button>
-          <button class="random-btn" style="top: 170px; left: 500px;background-color: greenyellow">hpop</button>
-          <button class="random-btn" style="top: 280px; left: 300px;background-color: hotpink">小说</button>
-          <button class="random-btn" style="top: 240px; left: 1250px;background-color: paleturquoise">塔</button>
-          <button class="random-btn" style="top: 150px; left: 50px;background-color: salmon">手账</button>
-          <button class="random-btn" style="top: 180px; left: 780px;background-color: cadetblue">新疆旅游</button>
-          <button class="random-btn" style="top: 80px; left: 600px;background-color: firebrick">国际政治</button>
-        </div>
-      </div>
-    </div>
-    <div class="bottom-container">
-      <!-- 新添加的图片容器 -->
-      <div class="image-container">
-        <img :src="'/images/ENFP-竞选者.png'" alt="Image" class="image-content">
-      </div>
-
-      <div class="group_sug1" v-for="(room, index) in rooms" :key="index">
-        <!-- 房间头像 -->
-        <div class="grp1_img">
-          <img :src="room.avatarUrl || defaultAvatar" alt="房间头像" class="room-avatar">
+      <!-- 右侧边栏 -->
+      <div class="secondbar">
+        <!-- 搜索输入框和按钮 -->
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="请输入搜索内容">
+          <button class="secondbar-link3">搜索</button>
         </div>
 
-        <!-- 房间名称 -->
-        <div class="room-name">{{ room.roomName }}</div>
-
-        <!-- 房间标签 -->
-        <div class="room-tag">{{ room.roomTag }}</div>
-
-        <!-- 在线人数 -->
-        <div class="room-online">{{ room.onlineCount }} 在线</div>
+        <button class="secondbar-link" @click="showModal = true">创建房间</button>
+        <button class="secondbar-link" @click="showTagModal = true">标签分类</button>
       </div>
     </div>
   </div>
@@ -163,9 +185,8 @@
   import axios from 'axios';
   import { onMounted } from 'vue';
 
-  // 弹窗控制
-  const showModal = ref(false);
 
+  const router = useRouter(); // 初始化路由实例
   // 表单数据
   const roomId = ref(Math.floor(Math.random() * 1000000)); // 自动生成房间号
   const roomName = ref('');
@@ -174,10 +195,41 @@
   const avatar2 = ref(null);
   const avatar2Url = ref(defaultAvatar); // 上传头像的预览URL
   const rooms = ref([]); // 用于存储从后端获取的房间数据
+  // 弹窗控制
+  const showModal = ref(false);
   const showTagModal = ref(false);
+  const showTagRoomModal = ref(false);
   const tags = ref([]);
+  const sugTags = ref([]);
+  // 新增：用于存储标签房间弹窗中要展示的房间数据（根据点击的标签动态变化）
+  const tagRoomsData = ref([]);
+  // 新增：用于标识当前点击的标签（方便向后端请求对应标签的房间数据）
+  const currentTag = ref('');
 
   const defaultAvatar = "/images/ENFP-竞选者.png";
+
+  const group_sug1Click = (room) => {
+  localStorage.setItem('currentRoomId', room.roomId);
+  console.log("点击推荐房间",room.roomId);
+  router.push('/chat' ); 
+  };
+
+  // 点击标签按钮（random-btn和tag-btn通用的点击处理函数）
+const handleTagClick = async (tagName) => {
+  currentTag.value = tagName;
+  showTagRoomModal.value = true;
+  try {
+    // 向后端发送GET请求，查询包含当前点击标签的房间数据，这里的API地址需根据实际后端接口调整
+    const response = await axios.get(`https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/getRoomsByTag`,{
+      tagName: tagName
+    });
+    tagRoomsData.value = response.data.rooms;
+    console.log("获取标签对应房间数据成功", response.data);
+  } catch (error) {
+    console.error('获取标签对应房间数据失败', error);
+  }
+};
+
 
   // 关闭弹窗
   const closeModal = () => {
@@ -191,7 +243,6 @@
   roomType.value = 'public'; 
   avatar2.value = null; 
   avatar2Url.value = defaultAvatar;
-  // Any other fields you want to reset
 };
 
   // 创建房间
@@ -206,12 +257,14 @@
     }
 
     try {
-      const response = await axios.post('https://fccb0fa2-e2a0-4749-8131-2c5991792be7.mock.pstmn.io/createroom', formData, {
+      const response = await axios.post('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/createRoom', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log('房间创建成功', response.data);
+      localStorage.setItem("currentRoomId",roomId.value);
+      router.push('/chat');
       showModal.value = false; // 关闭弹窗
       resetForm();
     } catch (error) {
@@ -235,18 +288,43 @@ const uploadAvatar = (event) => {
 // 页面加载时请求房间数据
 onMounted(async () => {
   try {
-    const response = await axios.get('https://fccb0fa2-e2a0-4749-8131-2c5991792be7.mock.pstmn.io/get6rooms'); // 替换为实际的 API 地址
-    rooms.value = response.data.rooms; // 假设 API 返回的数据结构是 { rooms: [...] }
+    const response = await axios.get('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/get6rooms'); // 替换为实际的 API 地址
+    rooms.value = response.data.rooms; // 假设 API 返回的数据结构是 { rooms: [...] }、
+    console.log("六个房间加载成功",response.data);
   } catch (error) {
     console.error('获取房间数据失败', error);
   }
   try {
-    const response = await axios.get('https://fccb0fa2-e2a0-4749-8131-2c5991792be7.mock.pstmn.io/tags'); // 获取标签数据
-    tags.value = response.data; // 假设返回的格式是 [{ name: 'Kpop', color: '#6A5ACD' }, ...]
+    const response = await axios.get('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/tags'); // 获取标签数据
+    tags.value = response.data.tags; // 假设返回的格式是 [{ name: 'Kpop', color: '#6A5ACD' }, ...]
     console.log("标签加载成功",response.data);
   } catch (error) {
     console.error('获取标签数据失败', error);
   }
+
+  try {
+    const response = await axios.get('https://c0a44c40-bf9d-4ee5-804e-e48f05298c29.mock.pstmn.io/sugTags'); // 获取标签数据
+    sugTags.value = response.data.sugTags; // 假设返回的格式是 [{ name: 'Kpop', color: '#6A5ACD' }, ...]
+    console.log("滚动标签加载成功",response.data);
+  } catch (error) {
+    console.error('获取标签数据失败', error);
+  }
+
+  // 获取页面中所有的random-btn按钮元素
+  const randomBtns = document.querySelectorAll('.random-btn');
+  // 遍历标签数据，将标签值和颜色等属性赋值给按钮
+  sugTags.value.forEach((sugTag, index) => {
+    if (index < randomBtns.length) {
+      const btn = randomBtns[index];
+      btn.textContent = sugTag.tagname;
+      btn.style.backgroundColor = sugTag.color;
+
+      // 为每个按钮添加点击事件监听器
+      btn.addEventListener('click', () => {
+        handleTagClick(sugTag.tagname);
+      });
+    }
+  });
 });
   </script>
   
@@ -254,6 +332,7 @@ onMounted(async () => {
   .home-container {
     width: 100%;
     min-height: 100vh;
+    padding: 0;
     display: flex;
     flex-direction: column;
     background-color: #62A89B;
@@ -316,38 +395,48 @@ onMounted(async () => {
       }
     }
 
+    .main-container{
+      width: 100%;
+      height: 100%; 
+      flex-grow: 1; 
+      display: flex;
+      /* 使用 Flexbox 布局 */
+      flex-direction: row;
+      /* 设置 Flex 容器的子元素按垂直方向排列 */
+      padding: 0px;
+      /* 给容器添加内边距，防止内容紧贴容器边缘 */
+
+    }
+
+    .lefttwo{
+      width: 85%;
+      height: 100%;
+      display: flex;
+      /* 使用 Flexbox 布局 */
+      flex-direction: column;
+      /* 设置 Flex 容器的子元素按垂直方向排列 */
+    }
+
     //副栏样式
     .secondbar {
+      width: 15%;
+      //height: 200%;
       background-color: rgba(78, 124, 114, 0.75);
-      padding: 10px;
-      width: 100%;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .secondbar-content {
-      width: 100%;
-    }
-
-    .secondbar-links {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      padding: 0 20px;
+      flex: 1;
+      margin-right: 0%;
+      border-left: 1px solid #ccc;
+      flex-direction: column;
     }
 
     /* 创建房间和标签分类按钮样式 */
     .secondbar-link {
-      width: 30%;
-      /* 每个按钮占 30% 宽度，保证它们均匀分布 */
+      width: 100%;
       height: 40px;
       background: rgb(249, 250, 250);
       color: #5da877;
       border: none;
       outline: none;
-      border-radius: 5px;
+      flex-direction: column;
       font-weight: bold;
       font-size: 16px;
       cursor: pointer;
@@ -361,7 +450,7 @@ onMounted(async () => {
     /* 搜索容器 */
     .search-container {
       display: flex;
-      width: 30%;
+      width: 100%;
       justify-content: space-between;
       /* 输入框和按钮之间的间距 */
     }
@@ -369,6 +458,7 @@ onMounted(async () => {
     .search-input {
       width: 80%;
       height: 40px;
+      margin: 5px;
       padding: 0 10px;
       border-radius: 5px;
       border: none;
@@ -377,11 +467,22 @@ onMounted(async () => {
     }
 
     .secondbar-link3 {
-      width: 20%;
-      /* 搜索按钮占 20% 宽度 */
-      background-color: #b0ea53;
-      color: white;
-      /* 其他样式与按钮一致 */
+      width: 30%;
+      height: 40px;
+      background: rgb(249, 250, 250);
+      color: #5da877;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+      flex-direction: column;
+      margin: 5px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      &:hover {
+        font-size: 18px;
+      }
     }
 
     //横线样式
@@ -397,14 +498,14 @@ onMounted(async () => {
 
     /* 页面整体样式 */
     .home-content {
+      width: 100%;
+      height: 425px;
       font-family: Arial, sans-serif;
       /* 设置字体为 Arial 或 sans-serif 字体 */
       background-color: white;
       /* 设置背景颜色为浅灰色 */
       padding: 20px;
       /* 为容器添加内边距，防止内容紧贴边缘 */
-      text-align: center;
-      /* 内容居中对齐 */
     }
 
     /* 圆角容器 */
@@ -420,7 +521,6 @@ onMounted(async () => {
       padding: 30px;
       /* 为容器添加40px的内边距，避免内容贴近边缘 */
       margin-top: 3px;
-      /* 设置容器的上外边距为30px，避免与上方元素紧贴 */
       min-height: 380px;
       /* 设置容器的最小高度为300px，确保足够展示内容 */
       overflow: hidden;
@@ -470,8 +570,8 @@ onMounted(async () => {
     }
 
     .top-container2 {
-      display: flex;
-      position: absolute;
+      //display: flex;
+      //position: absolute;
       white-space: pre-wrap;
       /* 防止按钮换行 */
       //opacity: 0;                /* 默认透明 */
@@ -510,20 +610,21 @@ onMounted(async () => {
     /* 下半部分按钮 */
     .bottom-container {
       display: flex;
+      width: 100%;
       justify-content: space-around;
       /* 左对齐 */
       align-items: center;
       /* 垂直居中对齐 */
-      margin-top: 10px;
+      margin-top: 30px;
       //gap: 20px;
       /* 添加间距 */
     }
 
 
     .image-container {
-      width: 180px;
+      width: 200px;
       /* 宽度设置为100px */
-      height: 180px;
+      height: 200px;
       /* 高度设置为100px，确保它是方形的 */
       overflow: hidden;
       /* 隐藏超出部分 */
@@ -539,8 +640,8 @@ onMounted(async () => {
     }
 
     .group_sug1 {
-      width: 150px;
-      height: 175px;
+      width: 160px;
+      height: 190px;
       border-radius: 8px;
       background-color: rgb(249, 250, 250);
       padding: 10px;
@@ -577,6 +678,64 @@ onMounted(async () => {
       color: #24d97f;
     }
 
+    .tagRooms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 400px;
+  }
+
+    .group_sug2 {
+      width: 100%;
+      height: 80px;
+      border-radius: 8px;
+      background-color: rgb(249, 250, 250);
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction:row ;
+      gap:20px;
+      //justify-content: center;   /* 水平居中 */
+      //align-items: center;
+    }
+
+    .room-avatar2 {
+      width: 60px;
+      height: 60px;
+      //bject-fit: cover;
+    }
+
+    .NCMT{
+      display: flex;
+      flex-direction: column;
+      width: 740px;
+      gap:15px;
+    }
+
+    .NC{
+      display: flex;
+      flex-direction: row;
+      gap:20px;
+    }
+
+    .MT{
+      display: flex;
+      justify-content: space-between;  /* 水平布局：将子元素分散排列，左边一个，右边一个 */
+      align-items: flex-end; 
+      font-size: 14px;
+      color:#777;
+      //gap:570px;
+    }
+
+    .lastMsgTime{
+      font-size: 12px;
+    }
+
+    .room-online2 {
+      font-size: 18px;
+      color: #24d97f;
+    }
 
     /* 弹窗遮罩层 */
     .modal-overlay {
@@ -679,13 +838,17 @@ onMounted(async () => {
   .tag-btn {
     padding: 10px 20px;
     border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 110px;
-    height: 30px;
-    color: rgb(0, 0, 0);
-    font-size: 14px;
+    height: 40px;
+    color: rgb(255, 255, 255);
+    font-size: 16px;
     cursor: pointer;
     border: none;
     transition: background-color 0.3s ease;
+    
   }
 
   .tag-btn:hover {
@@ -709,6 +872,29 @@ onMounted(async () => {
     &:hover{
       font-size: 16px;
     }
+  }
+
+  .modal-overlay3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  /* 弹窗内容 */
+  .modal-content3 {
+    background-color: white;
+    color: #87aca2;
+    padding: 20px;
+    border-radius: 8px;
+    width: 800px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
 </style>
   
