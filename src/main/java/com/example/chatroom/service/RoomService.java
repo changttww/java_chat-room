@@ -4,9 +4,11 @@ import com.example.chatroom.common.response.Response;
 import com.example.chatroom.entity.DTO.RoomDTO;
 import com.example.chatroom.entity.Room;
 import com.example.chatroom.entity.RoomMember;
+import com.example.chatroom.entity.RoomTag;
 import com.example.chatroom.entity.User;
 import com.example.chatroom.repository.RoomMemberRepository;
 import com.example.chatroom.repository.RoomRepository;
+import com.example.chatroom.repository.RoomTagRepository;
 import com.example.chatroom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,10 @@ public class RoomService {
 
     @Autowired
     private RoomMemberRepository roomMemberRepository;  // 假设你有一个房间成员表
+
+    @Autowired
+    private RoomTagRepository roomTagRepository;  // 注入 RoomTagRepository
+
 
 
     // 通过用户名获取用户ID
@@ -78,34 +84,6 @@ public class RoomService {
     public Room createRoom(RoomDTO roomDTO) {
         Integer currentUserId = getCurrentUserId();
 
-        // 查找所有房间类型为 private 的房间
-        List<Room> privateRooms = roomRepository.findByRoomType("private");
-
-// 遍历所有私聊房间，查找符合条件的房间
-        for (Room room : privateRooms) {
-            Integer roomId = room.getRoomId();
-
-            // 获取房间成员
-            List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
-            List<Integer> memberIds = roomMembers.stream()
-                    .map(member -> member.getUser().getId())
-                    .toList();
-
-            // 判断是否符合条件
-            boolean isCurrentUserMember = memberIds.contains(currentUserId);
-            boolean isReceiverMember = memberIds.contains(roomDTO.getReceiverUid());
-
-            // 判断情况1：当前用户是创建者且唯一成员是接收者
-            if (room.getOwnerUid().equals(currentUserId) && isReceiverMember) {
-                return room; // 返回现有房间
-            }
-
-            // 判断情况2：接收者是创建者且唯一成员是当前用户
-            if (room.getOwnerUid().equals(roomDTO.getReceiverUid()) && isCurrentUserMember) {
-                return room; // 返回现有房间
-            }
-        }
-
         Room room = new Room();
         room.setOwnerUid(currentUserId);
         room.setRoomType(roomDTO.getRoomType());
@@ -114,12 +92,55 @@ public class RoomService {
         room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().substring(0, 8) : null);
         room.setHead(roomDTO.getHead());
         room.setDescription(roomDTO.getDescription());
+        room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
 
-        // Save room and add the current user and receiver (if private)
-        room = roomRepository.save(room);
+        // Save room and add the current user and receiver (if private);
+        // Save room first and flush to ensure persistence
+        room = roomRepository.saveAndFlush(room);
+
+        // 处理房间标签
+        if (roomDTO.getTags() != null && !roomDTO.getTags().isEmpty()) {
+            for (String tagName : roomDTO.getTags()) {
+                // Check if tag already exists
+
+                RoomTag roomTag = new RoomTag();
+                    roomTag.setRoom(room);
+                    roomTag.setTag(tagName);
+                room.getRoomTags().add(roomTag); // 同步更新 Room 的 roomTags 列表
+                roomTagRepository.save(roomTag);
+            }
+        }
 
         if ("private".equalsIgnoreCase(room.getRoomType())) {
+            // 查找所有房间类型为 private 的房间
+            List<Room> privateRooms = roomRepository.findByRoomType("private");
+
+            // 遍历所有私聊房间，查找符合条件的房间
+            for (Room room1 : privateRooms) {
+                Integer roomId = room1.getRoomId();
+
+                // 获取房间成员
+                List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
+                List<Integer> memberIds = roomMembers.stream()
+                        .map(member -> member.getUser().getId())
+                        .toList();
+
+                // 判断是否符合条件
+                boolean isCurrentUserMember = memberIds.contains(currentUserId);
+                boolean isReceiverMember = memberIds.contains(roomDTO.getReceiverUid());
+
+                // 判断情况1：当前用户是创建者且唯一成员是接收者
+                if (room.getOwnerUid().equals(currentUserId) && isReceiverMember) {
+                    return room1; // 返回现有房间
+                }
+
+                // 判断情况2：接收者是创建者且唯一成员是当前用户
+                if (room.getOwnerUid().equals(roomDTO.getReceiverUid()) && isCurrentUserMember) {
+                    return room1; // 返回现有房间
+                }
+            }
 
             // Add the current user and receiver to the room
             RoomMember roomMember = new RoomMember();
@@ -133,6 +154,8 @@ public class RoomService {
 
             roomMemberRepository.save(roomMember);  // 保存成员到数据库
         }
+
+
         return room;
     }
 
@@ -202,10 +225,12 @@ public class RoomService {
                     return memberInfo;
                 })
                 .collect(Collectors.toList());
-
-
         roomDTO.setMembers(members); // 设置成员信息列表
 
+        List<RoomTag> roomTags = roomTagRepository.findByRoom_RoomId(roomId);
+        roomDTO.setTags(roomTags.stream()
+                .map(RoomTag::getTag)
+                .collect(Collectors.toList()));
 
         return roomDTO;
     }

@@ -20,6 +20,7 @@ public class Room {
     @Column(name = "room_type", nullable = false)
     private String roomType;
 
+
     @Column(name = "owner_uid", nullable = false)
     private Integer ownerUid;
 
@@ -35,6 +36,7 @@ public class Room {
     @Column(name="description")
     private String description;
 
+
     @ManyToMany
     @JoinTable(
             name = "room_member",
@@ -42,6 +44,11 @@ public class Room {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> members = new ArrayList<>();  // 成员列表
+
+    // 新增关系：一个房间对应多个标签
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomTag> roomTags = new ArrayList<>();  // 标签列表
+
 
     @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
@@ -159,4 +166,20 @@ public class Room {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public List<RoomTag> getRoomTags() {
+        return roomTags;
+    }
+
+    public void setRoomTags(List<RoomTag> roomTags) {
+        this.roomTags = roomTags;
+    }
+
+
+
+
+
+
 }
+
+

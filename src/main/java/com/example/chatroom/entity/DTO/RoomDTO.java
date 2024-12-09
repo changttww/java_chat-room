@@ -18,6 +18,7 @@ public class RoomDTO {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String description;
+    private List<String> tags;
 
     // 房间成员信息，用于加入房间
     private Integer userId;  // 用户ID，适用于加入房间的请求
@@ -163,6 +164,14 @@ public class RoomDTO {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }
 
