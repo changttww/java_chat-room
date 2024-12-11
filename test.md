@@ -11,7 +11,7 @@
   ```json
   {
     "userName": "string",
-    "userId": int,
+    "userId": "int",
     "password": "string"
   }
   ```
@@ -21,7 +21,7 @@
     "code": 200,
     "msg": "Registration successful"
   }
-  ``
+  ```
 
 #### **1.2 用户登录**
 - **方法类型：** POST  
@@ -29,7 +29,7 @@
 - **请求参数：**
   ```json
   {
-    "userId": int,
+    "userId": "int",
     "password": "string"
   }
   ```
@@ -145,6 +145,27 @@
   ```
 - **说明：** 添加或移除黑名单。
 
+#### **1.6 搜索用户信息**
+- **方法类型：** GET  
+- **接口路径：** `/getUserByUserId`  
+- **请求参数：**
+  - "headers": {
+        'Authorization': `Bearer ${token}`
+    },
+    "userId":"int"
+    
+- **响应格式：**
+  ```json
+  {
+    "code": 200,
+    "message": "User info fetched successfully",
+    "users": {
+      "userName": "string",
+      "userAvatar": "url"
+    }
+  }
+  ```
+- **说明：** 查询用户详细信息。
 ---
 
 ### **2. 聊天室管理模块**
