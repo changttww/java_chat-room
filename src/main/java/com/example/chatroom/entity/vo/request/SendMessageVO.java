@@ -1,8 +1,10 @@
 package com.example.chatroom.entity.vo.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class SendMessageVO {
     private int roomId;   // 房间 ID
     private int uid;      // 用户 ID
