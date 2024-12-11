@@ -93,6 +93,11 @@
             <artifactId>fastjson2</artifactId>
             <version>2.0.37</version>
         </dependency>
+        <!-- Jackson for JSON serialization/deserialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
 
         <dependency>
