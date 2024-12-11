@@ -44,7 +44,7 @@ public class RoomService {
 
             if (userOptional.isPresent() ) {
                 User user = userOptional.get();
-                return user.getId();  // 返回用户的ID
+                return user.getUserid();  // 返回用户的ID
             } else {
                 throw new RuntimeException("User not found");
             }
@@ -88,7 +88,7 @@ public class RoomService {
             // 获取房间成员
             List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
             List<Integer> memberIds = roomMembers.stream()
-                    .map(member -> member.getUser().getId())
+                    .map(member -> member.getUser().getUserid())
                     .toList();
 
             // 判断是否符合条件
@@ -195,10 +195,10 @@ public class RoomService {
         List<Map<String, Object>> members = roomMembers.stream()
                 .map(member -> {
                     Map<String, Object> memberInfo = new HashMap<>();
-                    memberInfo.put("userId", member.getUser().getId());
+                    memberInfo.put("userId", member.getUser().getUserid());
                     memberInfo.put("username", member.getUser().getUsername());
                     memberInfo.put("joinedAt", member.getJoinedAt().toString());// 转为字符串格式
-                    memberInfo.put("head", member.getUser().getHead());
+                    memberInfo.put("avatar", member.getUser().getAvatar());
                     return memberInfo;
                 })
                 .collect(Collectors.toList());
