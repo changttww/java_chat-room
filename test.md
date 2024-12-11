@@ -244,7 +244,15 @@
 - **方法类型：** POST
 - **接口路径：** `/api/rooms/{roomId}/leave`
 - **描述：** 用户主动退出房间。
-
+**请求参数：**
+```json
+{
+  headers: {
+     'Authorization': `Bearer ${token}`
+  },
+  "roomId": int
+}
+```
 **响应格式：**
 ```json
 {
