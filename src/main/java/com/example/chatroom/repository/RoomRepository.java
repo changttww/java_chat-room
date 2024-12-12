@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, String> {
+public interface RoomRepository extends JpaRepository<Room, Integer> {
     Optional<Room> findByRoomId(Integer roomId);
     // 查询房间类型是 private
     List<Room> findByRoomType(String roomType);
