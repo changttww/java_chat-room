@@ -8,11 +8,13 @@ import com.example.chatroom.entity.vo.response.MessageVO;
 import com.example.chatroom.mapper.MessageMapper;
 import com.example.chatroom.repository.MessageRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageRepository {
