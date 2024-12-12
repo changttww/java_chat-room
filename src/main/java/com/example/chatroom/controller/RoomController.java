@@ -1,10 +1,8 @@
 package com.example.chatroom.controller;
 
 import com.example.chatroom.entity.DTO.RoomDTO;
-import com.example.chatroom.repository.MessageRepository;
 import com.example.chatroom.entity.Room;
 import com.example.chatroom.service.RoomService;
-import com.example.chatroom.WebSocket.WebSocketServer;
 import com.example.chatroom.common.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

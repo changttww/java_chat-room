@@ -9,9 +9,6 @@ import com.example.chatroom.entity.vo.response.MessageVO;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
 public interface MessageRepository extends IService<Message> {
     /**
      * 保存消息
