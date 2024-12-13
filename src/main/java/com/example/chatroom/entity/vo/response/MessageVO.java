@@ -1,20 +1,203 @@
 package com.example.chatroom.entity.vo.response;
 
-import com.example.chatroom.entity.vo.request.SendMessageVO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.lang.StringBuilder;
 
-@Data
-@AllArgsConstructor
+@Entity
+@Table(name = "messages")
 public class MessageVO {
-    int roomId;       // 房间 ID
-    int uid;          // 用户 ID
-    String type;         // 消息类型
-    SendMessageVO.Content content; // 消息内容
-    LocalDateTime sendTime; // 消息发送时间
-    String userName;     // 用户名
-    String userAvatar;   // 用户头像
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;     //主键id，自动生成
+
+    @Column(name = "roomId", nullable = false)
+    int roomId;   // 房间 ID
+
+    @Column(name = "uid", nullable = false)
+    int uid;      // 用户 ID
+
+    @Column(name = "type", nullable = false)
+    Integer type;     // 消息类型 (TEXT, IMAGE, EMOJI)
+
+    @Embedded
+    Content content; // 消息内容
+
+    @Column(name = "sendTime", nullable = false)
+    LocalDateTime sendTime;
+
+    @Column(name = "userName", nullable = false)
+    Integer userName; // 用户名
+
+    @Column(name = "userAvatar", nullable = false)
+    Integer userAvatar; // 用户头像
+
+    // Getters and Setters
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Content getContent() {
+        return content;
+    }
+
+    public void setContent(Content content) {
+        this.content = content;
+    }
+
+    public LocalDateTime getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(LocalDateTime sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public Integer getUserName() {
+        return userName;
+    }
+
+    public void setUserName(Integer userName) {
+        this.userName = userName;
+    }
+
+    public Integer getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(Integer userAvatar) {
+        this.userAvatar = userAvatar;
+    }
+
+
+    @Embeddable
+    public static class Content {
+        @Column(name = "text")
+        private String text;  // 消息文本内容
+
+        @Column(name = "url")
+        private String url;  // 图片资源URL
+
+        @Embedded
+        private Meta meta;  // 图片的元数据（宽高等）
+
+
+        // Getters and Setters
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public Meta getMeta() {
+            return meta;
+        }
+
+        public void setMeta(Meta meta) {
+            this.meta = meta;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Content{")
+                    .append("text='").append(text).append('\'')
+                    .append(", url='").append(url).append('\'')
+                    .append(", meta=").append(meta)  // 会调用 Meta 的 toString 方法
+                    .append('}');
+            return sb.toString();
+        }
+
+        @Embeddable
+        public static class Meta {
+            @Column(name = "width")
+            Integer width;  // 图片宽度
+
+            @Column(name = "height")
+            Integer height; // 图片高度
+
+            // Getters and Setters
+
+            public int getWidth() {
+                return width;
+            }
+
+            public void setWidth(int width) {
+                this.width = width;
+            }
+
+            public int getHeight() {
+                return height;
+            }
+
+            public void setHeight(int height) {
+                this.height = height;
+            }
+
+            @Override
+            public String toString() {
+                return "Meta{" +
+                        "width=" + width +
+                        ", height=" + height +
+                        '}';
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Message{")
+                .append(", roomId=").append(roomId)
+                .append(", uid=").append(uid)
+                .append(", type='").append(type).append('\'')
+                .append(", content=").append(content)  // 会调用 Content 的 toString 方法
+                .append(", sendTime=").append(sendTime)
+                .append(", userName='").append(userName).append('\'')
+                .append(", userAvatar='").append(userAvatar).append('\'')
+                .append('}');
+        return sb.toString();
+    }
 }

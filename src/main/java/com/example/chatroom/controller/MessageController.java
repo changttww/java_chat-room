@@ -27,11 +27,10 @@ public class MessageController {
     @PostMapping("/send")
     public Response<Void> sendMessage(@RequestBody SendMessageVO vo) {
         try {
-            // 保存消息到数据库
-            messageRepository.saveMessage(vo);
-
             // 推送消息到指定房间
             webSocketServer.sendMessageToRoom(vo.getRoomId(), vo);
+            // 保存消息到数据库
+            messageRepository.saveMessage(vo);
         } catch (Exception e) {
             //log.error("消息发送失败: {}", e.getMessage());
             return Response.error("发送消息失败");

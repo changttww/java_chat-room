@@ -6,6 +6,7 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.stereotype.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -89,7 +90,7 @@ public class WebSocketServer {
 
         try {
             // 构建接收消息的格式
-            Map<String, Object> message = Map.of(
+            Map<@org.jetbrains.annotations.NotNull String, @org.jetbrains.annotations.NotNull Object> message = Map.of(
                     "roomId", vo.getRoomId(),
                     "uid", vo.getUid(),
                     "type", vo.getType(),
