@@ -18,7 +18,7 @@ public class RoomMember implements Serializable {
     private Room room;  // 关联的房间
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;  // 关联的用户
 
     @Column(name = "joined_at", nullable = false, updatable = false)

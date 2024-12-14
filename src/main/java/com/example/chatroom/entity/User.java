@@ -2,7 +2,7 @@
 package com.example.chatroom.entity;
 
 import jakarta.persistence.*;
-        import java.sql.Timestamp;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,20 +12,28 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @Column(name = "user_id", nullable = false, unique = true)
+    private Integer userid;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "user_name", nullable = false, unique = true)
     private String username;
+
+    @Column(name = "memo", nullable = false, unique = true)
+    private String memo;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "avatar")
+    private String avatar;
 
-    @Column(name = "head", nullable = false)
-    private String head;
+    @ManyToMany
+    @JoinTable(
+        name = "user_relationship", // 中间表名称
+        joinColumns = @JoinColumn(name = "user_id"), // 当前用户在中间表的外键列
+        inverseJoinColumns = @JoinColumn(name = "other_id") // 相关用户在中间表的外键列
+    )
+    private List<User> relationships = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members")
     private List<Room> rooms = new ArrayList<>();  // 用户加入的房间列表
@@ -34,12 +42,12 @@ public class User {
     private Timestamp createdAt;
 
     // Getter 和 Setter 方法
-    public Integer getId() {
-        return id;
+    public Integer getUserid() {
+        return userid;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setuserId(Integer userid) {
+        this.userid = userid;
     }
 
     public String getUsername() {
@@ -58,20 +66,20 @@ public class User {
         this.password = password;
     }
 
-    public String getName() {
-        return name;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public String getHead() {
-        return head;
+    public String getMemo(){
+        return memo;
     }
 
-    public void setHead(String head) {
-        this.head = head;
+    public void setMemo(String memo){
+        this.memo=memo;
     }
 
     public Timestamp getCreatedAt() {
@@ -82,16 +90,22 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    //
+    
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
     // toString, equals 和 hashCode 方法
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
+                "userid=" + userid +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", head='" + head + '\'' +
-                ", createdAt=" + createdAt +
+                ", avatar='" + avatar + '\'' +
+                ", createdAt=" + createdAt + '\'' +
+                ", memo='" + memo +
                 '}';
     }
 
@@ -100,15 +114,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id.equals(user.id);
+        return userid.equals(user.userid);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
-
-    public List<Room> getRooms() {
-        return rooms;
+        return userid != null ? userid.hashCode() : 0;
     }
 }

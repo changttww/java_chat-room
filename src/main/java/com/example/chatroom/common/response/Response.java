@@ -1,5 +1,8 @@
 package com.example.chatroom.common.response;
 
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
+
 public class Response<T> {
     private int code;
     private String message;
@@ -43,5 +46,10 @@ public class Response<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    //使用response.getWrite().write时返回JSON格式数据，直接返回对象自动转为JSON格式
+    public String asJSONString(){
+        return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls);
     }
 }
