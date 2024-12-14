@@ -31,7 +31,7 @@ public class Room {
     private String inviteCode;
 
     @Column(name = "head")
-    private String head;
+    private String roomAvatar;
 
     @Column(name="description")
     private String description;
@@ -121,14 +121,6 @@ public class Room {
         this.updatedAt = updatedAt;
     }
 
-    public String getHead() {
-        return head;
-    }
-
-    public void setHead(String head) {
-        this.head = head;
-    }
-
     // toString 方法
     @Override
     public String toString() {
@@ -176,10 +168,13 @@ public class Room {
     }
 
 
+    public String getRoomAvatar() {
+        return roomAvatar;
+    }
 
-
-
-
+    public void setRoomAvatar(String roomAvatar) {
+        this.roomAvatar = roomAvatar;
+    }
 }
 
 

@@ -11,6 +11,7 @@
     <groupId>com.example</groupId>
     <artifactId>chatroom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging> <!-- 确保这行存在 -->
     <name>chatroom</name>
     <description>chatroom</description>
     <url/>

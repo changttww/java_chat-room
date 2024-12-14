@@ -153,17 +153,18 @@
 
 #### **2.1. 创建房间**
 - **方法类型：** POST
-- **接口路径：** `@/createRoom`
+- **接口路径：** `api/rooms/create`
 - **描述：** 创建新房间（支持私聊、群聊）。
 
 **请求参数：**
+//这里增加了一个gruop群聊类型,删除了用户id的传入，id是自增的
 ```json
 {
-  "roomType": "public/private",       
+  "roomType": "public/private/group",       
   "roomName": "string",   
   "roomAvatar": "url",    
-  "roomTag": "string",
-  "roomId": int
+  "roomTag": "string"
+  
 }
 ```
 
@@ -179,7 +180,7 @@
 
 #### **2.2. 查询房间详情**
 - **方法类型：** GET
-- **接口路径：** `@getRoomInfo/{roomId}`
+- **接口路径：** `api/rooms/{roomId}`
 - **描述：** 获取房间的详细信息。
 
 **请求参数：**
@@ -199,12 +200,12 @@
       {
         "userId": int,
         "username": "string",
-        "head": "url"
+        "roomAvatar": "url"
       },
       {
         "userId": int,
         "username": "string",
-        "head": "url"
+        "roomAvatar": "url"
       }
     ]
   }
@@ -331,7 +332,7 @@
 
 #### **2.9. 获得6个推荐房间
 - **方法类型：** GET
-- **接口路径：** `@/get6rooms`
+- **接口路径：** `api/rooms/get6rooms`
 
 **请求参数：**
 
@@ -357,7 +358,7 @@
 ---
 #### **2.10. 获得全部标签
 - **方法类型：** GET
-- **接口路径：** `@/tags`
+- **接口路径：** `api/rooms/tags`
 
 **请求参数：**
 
@@ -379,7 +380,7 @@
 ---
 #### **2.11. 获得用户所有加入房间的基本信息
 - **方法类型：** GET
-- **接口路径：** `@/room-choose`
+- **接口路径：** `api/rooms/room-choose`
 
 **请求参数：**
   ```json
@@ -410,7 +411,7 @@
 ---
 #### **2.12. 获取20个推荐房间标签
 - **方法类型：** GET
-- **接口路径：** `@/sugTags`
+- **接口路径：** `api/rooms/sugTags`
 
 **请求参数：**
  
@@ -436,13 +437,15 @@
 ---
 #### **2.13. 通过标签获得房间
 - **方法类型：** GET
-- **接口路径：** `@/getRoomsByTag`
+- **接口路径：** `api/rooms/getRoomsByTag`
 
 **请求参数：**
- {
+ ```json
+{
      "tag":"string"
-  }
-**响应格式：**
+}
+```
+  **响应格式：**
 ```json
 {
   "code": 200,

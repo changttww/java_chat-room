@@ -90,7 +90,7 @@ public class RoomService {
         room.setRoomName(roomDTO.getRoomName());
         room.setMaxMembers(roomDTO.getMaxMembers());
         room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().substring(0, 8) : null);
-        room.setHead(roomDTO.getHead());
+        room.setRoomAvatar(roomDTO.getRoomAvatar());
         room.setDescription(roomDTO.getDescription());
         room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
@@ -204,7 +204,7 @@ public class RoomService {
         roomDTO.setRoomType(room.getRoomType());
         roomDTO.setOwnerUid(room.getOwnerUid());
         roomDTO.setMaxMembers(room.getMaxMembers());
-        roomDTO.setHead(room.getHead());
+        roomDTO.setRoomAvatar(room.getRoomAvatar());
         roomDTO.setRoomName(room.getRoomName());
         roomDTO.setInviteCode(room.getInviteCode());
         roomDTO.setCreatedAt(room.getCreatedAt());
@@ -318,8 +318,8 @@ public class RoomService {
         if (roomDTO.getMaxMembers() != null) {
             room.setMaxMembers(roomDTO.getMaxMembers());
         }
-        if (roomDTO.getHead() != null) {
-            room.setHead(roomDTO.getHead());
+        if (roomDTO.getRoomAvatar() != null) {
+            room.setRoomAvatar(roomDTO.getRoomAvatar());
         }
         if (roomDTO.getDescription() != null) {
             room.setDescription(roomDTO.getDescription());

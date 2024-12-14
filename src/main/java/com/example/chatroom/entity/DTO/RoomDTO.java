@@ -12,7 +12,7 @@ public class RoomDTO {
     private String roomName; // 房间名称，适用于公共和群聊类型
     private Integer maxMembers; // 最大成员数，适用于群聊和公共房间
     private String inviteCode; // 邀请码，仅适用于群聊
-    private String head; // 房间头像
+    private String roomAvatar; // 房间头像
     private Integer ownerUid; // 房间创建者，适用于创建房间
     private Integer receiverUid; // 仅用于私聊，接收者的用户ID
     private Timestamp createdAt;
@@ -72,13 +72,6 @@ public class RoomDTO {
         this.inviteCode = inviteCode;
     }
 
-    public String getHead() {
-        return head;
-    }
-
-    public void setHead(String head) {
-        this.head = head;
-    }
 
     public Integer getOwnerUid() {
         return ownerUid;
@@ -172,6 +165,14 @@ public class RoomDTO {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getRoomAvatar() {
+        return roomAvatar;
+    }
+
+    public void setRoomAvatar(String roomAvatar) {
+        this.roomAvatar = roomAvatar;
     }
 }
 
