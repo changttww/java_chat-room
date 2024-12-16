@@ -3,19 +3,16 @@ package com.example.chatroom.controller;
 import com.example.chatroom.common.response.Response;
 import com.example.chatroom.entity.vo.request.SendMessageVO;
 import com.example.chatroom.entity.vo.response.MessageVO;
-import com.example.chatroom.repository.MessageRepository;
 import com.example.chatroom.WebSocket.WebSocketServer;
 
 import com.example.chatroom.service.MessageService;
 import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping(value = "/api/messages")
 public class MessageController {
@@ -23,10 +20,8 @@ public class MessageController {
     @Autowired
     MessageService messageService;
 
-    @Resource
+    @Autowired
     private WebSocketServer webSocketServer;
-    @Resource
-    private MessageRepository messageRepository;
 
     //发送消息到房间
     @PostMapping("/send")
