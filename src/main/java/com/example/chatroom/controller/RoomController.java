@@ -1,6 +1,7 @@
 package com.example.chatroom.controller;
 
 import com.example.chatroom.entity.DTO.RoomDTO;
+import com.example.chatroom.entity.RoomTag;
 import com.example.chatroom.repository.MessageRepository;
 import com.example.chatroom.entity.Room;
 import com.example.chatroom.service.RoomService;
@@ -144,6 +145,57 @@ public class RoomController {
             return Response.success(null,"Member muted successfully");
         } catch (Exception e) {
             return Response.error("Error muting member: " + e.getMessage());
+        }
+    }
+
+    //获得6个推荐房间
+    @GetMapping("/get6rooms")
+    public Response<List<Room>> get6RecommendedRooms() {
+        List<Room> rooms = roomService.get6RecommendedRooms();
+        return Response.success("Recommended rooms fetched successfully", rooms);
+    }
+
+    // 2.10. Get all tags
+    @GetMapping("/tags")
+    public Response<List<String>> getAllTags() {
+        try {
+            List<String> tags = roomService.getAllTags();
+            return Response.success("Tags fetched successfully", tags);
+        } catch (Exception e) {
+            return Response.error("Error fetching tags: " + e.getMessage());
+        }
+    }
+
+    // 2.11. Get all rooms the user has joined with basic information
+    @GetMapping("/room-choose")
+    public Response<List<RoomDTO>> getUserJoinedRooms(@RequestHeader("Authorization") String token) {
+        try {
+            List<RoomDTO> rooms = roomService.getUserJoinedRooms();
+            return Response.success("Rooms fetched successfully", rooms);
+        } catch (Exception e) {
+            return Response.error("Error fetching joined rooms: " + e.getMessage());
+        }
+    }
+
+    // 2.12. Get 20 recommended room tags
+    @GetMapping("/sugTags")
+    public Response<List<RoomTag>> getTop20RoomTags() {
+        try {
+            List<RoomTag> tags = roomService.getTop20RoomTags();
+            return Response.success("Tags fetched successfully", tags);
+        } catch (Exception e) {
+            return Response.error("Error fetching suggested tags: " + e.getMessage());
+        }
+    }
+
+    // 2.13. Get rooms by tag
+    @GetMapping("/getRoomsByTag")
+    public Response<List<Room>> getRoomsByTag(@RequestParam String tag) {
+        try {
+            List<Room> rooms = roomService.getRoomsByTag(tag);
+            return Response.success("Rooms fetched successfully", rooms);
+        } catch (Exception e) {
+            return Response.error("Error fetching rooms by tag: " + e.getMessage());
         }
     }
 

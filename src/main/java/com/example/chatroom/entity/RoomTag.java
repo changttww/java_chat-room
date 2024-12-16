@@ -20,6 +20,10 @@ public class RoomTag {
     @Column(name = "tag", nullable = false)
     private String tag;  // 标签名称
 
+    //增加标签颜色
+    @Column(name = "color",nullable = false)
+    private String color;
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -44,4 +48,10 @@ public class RoomTag {
     public void setTag(String tag) {
         this.tag = tag;
     }
+
+    public String getColor() {
+        return color;
+    }
+    public void setColor(String color){this.color = color;}
+
 }

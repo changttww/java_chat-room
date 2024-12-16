@@ -19,16 +19,20 @@ public class RoomDTO {
     private Timestamp updatedAt;
     private String description;
     private List<String> tags;
+    private int roomPeopleCount;
 
     // 房间成员信息，用于加入房间
     private Integer userId;  // 用户ID，适用于加入房间的请求
     private String action;   // 操作类型，"join" 或 "leave" 等，用于加入/退出房间的请求
+    //统计在线人数
+    private Integer membersCount;
 
     // 列表，可以包含多个用户ID，用于群聊或批量操作
     private List<Integer> userIds;
     private List<Map<String, Object>> members; // 新增成员详细信息字段
 
     private String query;
+
 
 
     // Getter 和 Setter 方法
@@ -173,6 +177,15 @@ public class RoomDTO {
 
     public void setRoomAvatar(String roomAvatar) {
         this.roomAvatar = roomAvatar;
+    }
+
+
+    public int getRoomPeopleCount() {
+        return roomPeopleCount;
+    }
+
+    public void setRoomPeopleCount(int roomPeopleCount) {
+        this.roomPeopleCount = roomPeopleCount;
     }
 }
 

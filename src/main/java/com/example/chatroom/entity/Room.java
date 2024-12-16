@@ -36,6 +36,9 @@ public class Room {
     @Column(name="description")
     private String description;
 
+    @Column(name = "online_count")
+    private int roomPeopleCount;
+
 
     @ManyToMany
     @JoinTable(
@@ -174,6 +177,22 @@ public class Room {
 
     public void setRoomAvatar(String roomAvatar) {
         this.roomAvatar = roomAvatar;
+    }
+
+    public int getRoomPeopleCount() {
+        return roomPeopleCount;
+    }
+
+    // 增加1个在线人数
+    public void incrementRoomPeopleCount() {
+        this.roomPeopleCount += 1;
+    }
+
+    // 减少1个在线人数
+    public void decrementRoomPeopleCount() {
+        if (this.roomPeopleCount > 0) {
+            this.roomPeopleCount -= 1;
+        }
     }
 }
 

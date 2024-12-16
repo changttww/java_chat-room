@@ -217,6 +217,9 @@
     "roomName": "string",
     "roomType": "public/private",
     "ownerId": int,
+    "roomAvatar": "url",
+    "roomTag": "string",
+    "roomPeopleCount": int,
     "members": [
       {
         "userId": int,
@@ -310,7 +313,7 @@
 {
   "roomName": "新房间名称",
   "maxMembers": 100,
-  "head": "👾",
+  "roomAvatar": "👾",
   "description": "更新后的描述"
 }
 ```
@@ -350,7 +353,7 @@
       "roomId": 1,
       "roomName": "编程爱好者",
       "roomType": "group",
-      "membersCount": 50,
+      "roomPeopleCount": 50,
       "maxMembers": 100
     }
   ]
@@ -374,12 +377,12 @@
   "data": {
       "rooms": [
         {
-            "avatarUrl": "url",
+            "roomAvatar": "url",
             "roomName": "string",
             "roomId": int,
             "roomTag": "string",
-            "onlineCount": int
-        },
+            "roomPeopleCount": int
+        }
       ]
   }
 }
@@ -400,7 +403,7 @@
   "data": {
       "tags": [
         {
-            "tagname": "string",
+            "tag": "string",
             "color": "#E4080A"  (每次有新tag时随机生成一个颜色）
         },
       ]
@@ -427,12 +430,12 @@
   "data": {
       "rooms": [
         {
-            "avatarUrl": "url",
+            "roomAvatar": "url",
             "roomName": "string",
             "roomId": int,
             "roomTag": "string",
-            "onlineCount": int
-        },
+            "roomPeopleCount": int
+        }
       ]
   }
 }
@@ -452,13 +455,13 @@
   "data": {
       "sugTags": [
         {
-            "tagname": "string",
+            "tag": "string",
             "color": "string"
         },
         {
-            "tagname": "string",
+            "tag": "string",
             "color": "string"
-        },
+        }
       ]
   }
 }

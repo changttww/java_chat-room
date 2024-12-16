@@ -187,6 +187,7 @@ public class RoomService {
         roomMember.setUser(getCurrentUser());
         roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
         roomMemberRepository.save(roomMember);
+        room.incrementRoomPeopleCount();
 
         return Response.success("User joined room successfully",null);
     }
@@ -210,6 +211,7 @@ public class RoomService {
         roomDTO.setCreatedAt(room.getCreatedAt());
         roomDTO.setUpdatedAt(room.getUpdatedAt());
         roomDTO.setDescription(room.getDescription());
+        roomDTO.setRoomPeopleCount(room.getRoomPeopleCount());
 
         // 获取房间成员
         List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
@@ -257,6 +259,8 @@ public class RoomService {
         // 删除用户房间成员记录
         RoomMember roomMember = roomMemberOptional.get();
         roomMemberRepository.delete(roomMember);
+
+        room.decrementRoomPeopleCount();
 
         // 如果用户是房主且房间中没有其他成员，解散房间
         if (room.getOwnerUid().equals(currentUserId) && roomMemberRepository.countByRoom_RoomId(roomId) == 0) {
@@ -406,6 +410,50 @@ public class RoomService {
         RoomMember member = memberOptional.get();
         member.setMutedUntil(Timestamp.valueOf(LocalDateTime.now().plusMinutes(durationMinutes)));
         roomMemberRepository.save(member);
+    }
+
+
+    // 2.9. 获取6个推荐房间
+    public List<Room> get6RecommendedRooms() {
+        return roomRepository.findTop6ByOnlineCount();
+    }
+
+
+    // 2.10. 获取所有标签
+    public List<String> getAllTags() {
+        return roomTagRepository.findAllTags();
+    }
+
+    // 2.11. 获取用户加入的房间基本信息
+    public List<RoomDTO> getUserJoinedRooms() {
+        // 查找该用户参与的所有 RoomMember 记录
+        List<RoomMember> roomMembers = roomMemberRepository.findByUser_Id(getCurrentUserId());
+
+        // 获取房间信息并转换为 RoomDTO
+        List<RoomDTO> roomDTOs = new ArrayList<>();
+        for (RoomMember roomMember : roomMembers) {
+            Room room = roomMember.getRoom();
+            RoomDTO roomDTO = getRoomDetails(room.getRoomId());
+            roomDTOs.add(roomDTO);
+        }
+        return roomDTOs;
+    }
+
+
+    // 2.12. 获取20个推荐房间标签
+    public List<RoomTag> getTop20RoomTags() {
+        return roomTagRepository.findTop20Tags();
+    }
+
+    // 2.13. 通过标签获得房间
+    public List<Room> getRoomsByTag(String tag) {
+        // Fetch rooms that have the given tag
+        List<RoomTag> rooms = roomTagRepository.findByTag(tag);
+        List<Room> result = new ArrayList<>();
+        for (RoomTag roomTag : rooms) {
+            result.add(roomTag.getRoom());
+        }
+        return result;
     }
 
 
