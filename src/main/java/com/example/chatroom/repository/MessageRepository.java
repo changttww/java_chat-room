@@ -1,12 +1,10 @@
 // MessageRepository
 package com.example.chatroom.repository;
 
+import com.example.chatroom.entity.Message;
 import com.example.chatroom.entity.DTO.MessageDTO;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.example.chatroom.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

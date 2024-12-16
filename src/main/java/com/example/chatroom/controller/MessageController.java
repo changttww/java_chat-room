@@ -1,8 +1,8 @@
 package com.example.chatroom.controller;
 
 import com.example.chatroom.common.response.Response;
-import com.example.chatroom.entity.vo.request.SendMessageVO;
 import com.example.chatroom.entity.Message;
+import com.example.chatroom.entity.vo.request.SendMessageVO;
 import com.example.chatroom.WebSocket.WebSocketServer;
 
 import com.example.chatroom.service.MessageService;
@@ -42,7 +42,7 @@ public class MessageController {
      */
     @GetMapping("/sync")
     public Response<List<Message>> syncMessages(@RequestParam int roomId,
-                                                @RequestParam LocalDateTime lastTime) {
+                                                  @RequestParam LocalDateTime lastTime) {
         try {
             // 从数据库获取指定房间自 lastTime 以来的消息
             List<Message> messages = messageService.getMessagesSince(roomId, lastTime);

@@ -176,7 +176,7 @@ public class RoomService {
 
         Integer currentUserId = getCurrentUserId();
         // 检查用户是否已经是房间成员
-        Optional<RoomMember> roomMemberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(room.getRoomId(), currentUserId);
+        Optional<RoomMember> roomMemberOptional = roomMemberRepository.findByRoom_RoomIdAndUserUserid(room.getRoomId(), currentUserId);
         if (roomMemberOptional.isPresent()) {
             return Response.error("User already a member of the room");
         }
@@ -251,7 +251,7 @@ public class RoomService {
         Room room = roomOptional.get();
 
         // 检查用户是否是房间成员
-        Optional<RoomMember> roomMemberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, currentUserId);
+        Optional<RoomMember> roomMemberOptional = roomMemberRepository.findByRoom_RoomIdAndUserUserid(roomId, currentUserId);
         if (roomMemberOptional.isEmpty()) {
             throw new RuntimeException("User is not a member of the room");
         }
@@ -346,7 +346,7 @@ public class RoomService {
             throw new RuntimeException("Only the current owner can transfer ownership");
         }
 
-        Optional<RoomMember> newOwnerOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, newOwnerId);
+        Optional<RoomMember> newOwnerOptional = roomMemberRepository.findByRoom_RoomIdAndUserUserid(roomId, newOwnerId);
         if (newOwnerOptional.isEmpty()) {
             throw new RuntimeException("New owner must be a member of the room");
         }
@@ -380,7 +380,7 @@ public class RoomService {
             throw new RuntimeException("Only the owner can remove members");
         }
 
-        Optional<RoomMember> memberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, userId);
+        Optional<RoomMember> memberOptional = roomMemberRepository.findByRoom_RoomIdAndUserUserid(roomId, userId);
         if (memberOptional.isEmpty()) {
             throw new RuntimeException("Member not found in the room");
         }
@@ -402,7 +402,7 @@ public class RoomService {
             throw new RuntimeException("Only the owner can mute members");
         }
 
-        Optional<RoomMember> memberOptional = roomMemberRepository.findByRoom_RoomIdAndUserId(roomId, userId);
+        Optional<RoomMember> memberOptional = roomMemberRepository.findByRoom_RoomIdAndUserUserid(roomId, userId);
         if (memberOptional.isEmpty()) {
             throw new RuntimeException("Member not found in the room");
         }
@@ -427,7 +427,7 @@ public class RoomService {
     // 2.11. 获取用户加入的房间基本信息
     public List<RoomDTO> getUserJoinedRooms() {
         // 查找该用户参与的所有 RoomMember 记录
-        List<RoomMember> roomMembers = roomMemberRepository.findByUser_Id(getCurrentUserId());
+        List<RoomMember> roomMembers = roomMemberRepository.findByUser_Userid(getCurrentUserId());
 
         // 获取房间信息并转换为 RoomDTO
         List<RoomDTO> roomDTOs = new ArrayList<>();

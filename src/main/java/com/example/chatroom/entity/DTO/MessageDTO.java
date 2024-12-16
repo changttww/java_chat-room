@@ -2,12 +2,13 @@ package com.example.chatroom.entity.DTO;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.example.chatroom.entity.Message;
+
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.LocalDateTime;
-
-import com.example.chatroom.entity.Message;
 
 @Table(name="messages")
 @AllArgsConstructor

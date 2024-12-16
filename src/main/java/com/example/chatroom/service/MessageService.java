@@ -1,8 +1,8 @@
 package com.example.chatroom.service;
 
+import com.example.chatroom.entity.Message;
 import com.example.chatroom.entity.DTO.MessageDTO;
 import com.example.chatroom.entity.vo.request.SendMessageVO;
-import com.example.chatroom.entity.Message;
 import com.example.chatroom.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,19 +55,19 @@ public class MessageService {
     public List<Message> getMessagesSince(int roomId, LocalDateTime since) {
         List<MessageDTO> messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
 
-        List<Message> messageList = new ArrayList<>();
+        List<Message> messageVOList = new ArrayList<>();
         for (MessageDTO messageDTO : messages) {
-            Message message = new Message();
-            message.setRoomId(messageDTO.getRoomId());
-            message.setUid(messageDTO.getUid());
-            message.setType(messageDTO.getType());
-            message.setContent(messageDTO.getContent());
-            message.setSendTime(messageDTO.getSendTime());
-            message.setUserName(messageDTO.getUserName());
-            message.setUserAvatar(messageDTO.getUserAvatar());
+            Message messageVO = new Message();
+            messageVO.setRoomId(messageDTO.getRoomId());
+            messageVO.setUid(messageDTO.getUid());
+            messageVO.setType(messageDTO.getType());
+            messageVO.setContent(messageDTO.getContent());
+            messageVO.setSendTime(messageDTO.getSendTime());
+            messageVO.setUserName(messageDTO.getUserName());
+            messageVO.setUserAvatar(messageDTO.getUserAvatar());
 
-            messageList.add(message);
+            messageVOList.add(messageVO);
         }
-        return messageList;
+        return messageVOList;
     }
 }

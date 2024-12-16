@@ -1,6 +1,7 @@
 package com.example.chatroom.entity.vo.request;
 
 import com.example.chatroom.entity.Message;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

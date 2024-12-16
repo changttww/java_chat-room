@@ -11,18 +11,18 @@ import java.util.Optional;
 public interface RoomMemberRepository extends JpaRepository<RoomMember, Integer> {
 
     // 通过 room_id 和 user_id 查找某个房间中的用户成员
-    Optional<RoomMember> findByRoom_RoomIdAndUserId(Integer roomId, Integer userId);
+    Optional<RoomMember> findByRoom_RoomIdAndUserUserid(Integer roomId, Integer userId);
 
     // 通过 room_id 查找所有成员
     List<RoomMember> findByRoom_RoomId(Integer roomId);
 
     // 通过 user_id 查找所有参与的房间
-    List<RoomMember> findByUserId(Integer userId);
+    List<RoomMember> findByUserUserid(Integer userId);
 
     // 根据 room_id 删除某个成员
-    void deleteByRoom_RoomIdAndUserId(Integer roomId, Integer userId);
+    void deleteByRoom_RoomIdAndUserUserid(Integer roomId, Integer userId);
 
     int countByRoom_RoomId(Integer roomId);
 
-    List<RoomMember> findByUser_Id(Integer currentUserId);
+    List<RoomMember> findByUser_Userid(Integer currentUserId);
 }
