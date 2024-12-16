@@ -1,31 +1,34 @@
-// MessageService
-package com.example.chatroom.service.impl;
+package com.example.chatroom.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.chatroom.entity.DTO.MessageDTO;
 import com.example.chatroom.entity.vo.request.SendMessageVO;
 import com.example.chatroom.entity.vo.response.MessageVO;
-import com.example.chatroom.mapper.MessageMapper;
 import com.example.chatroom.repository.MessageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Service
-public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDTO> implements MessageRepository {
+public class MessageService {
+
+    private final MessageRepository messageRepository;
+
+    @Autowired
+    public MessageService(MessageRepository messageRepository) {
+        this.messageRepository = messageRepository;
+    }
 
     /**
      * 保存聊天信息
+     *
      * @param sendMessageVO 发送来的消息
      * @return success null
      */
-    @Override
     public String saveMessage(SendMessageVO sendMessageVO) {
         MessageDTO messageDTO = new MessageDTO();
-        messageDTO.setId(null);
         messageDTO.setRoomId(sendMessageVO.getRoomId());
         messageDTO.setUid(sendMessageVO.getUid());
         messageDTO.setType(sendMessageVO.getType());
@@ -34,25 +37,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDTO> i
         messageDTO.setUserName(sendMessageVO.getUserName());
         messageDTO.setUserAvatar(sendMessageVO.getUserAvatar());
 
-
-
-        if (!this.save(messageDTO)) {
-            return "消息保存失败";
+        try {
+            messageRepository.saveAndFlush(messageDTO);
+            return null;
+        } catch (Exception e) {
+            return "消息保存失败: " + e.getMessage();
         }
-        return null;
     }
 
     /**
      * 获取群聊信息
+     *
      * @param roomId 房间号
+     * @param since  起始时间
      * @return 群聊信息
      */
-    @Override
     public List<MessageVO> getMessagesSince(int roomId, LocalDateTime since) {
-        List<MessageDTO> messages = this.query()
-                .eq("roomId", roomId)
-                .ge("send_time", since)
-                .list();
+        List<MessageDTO> messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
+
         List<MessageVO> messageVOList = new ArrayList<>();
         for (MessageDTO messageDTO : messages) {
             MessageVO messageVO = new MessageVO();
@@ -60,7 +62,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageDTO> i
             messageVO.setUid(messageDTO.getUid());
             messageVO.setType(messageDTO.getType());
             messageVO.setContent(messageDTO.getContent());
-            messageDTO.setSendTime(messageDTO.getSendTime());
+            messageVO.setSendTime(messageDTO.getSendTime());
             messageVO.setUserName(messageDTO.getUserName());
             messageVO.setUserAvatar(messageDTO.getUserAvatar());
 
