@@ -126,6 +126,12 @@
             <version>6.0.0</version> <!-- 确保版本与 Spring Boot 3.x 兼容 -->
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
