@@ -18,7 +18,7 @@ public class MessageDTO {
 
     int roomId;
     int uid;
-    Integer type;
+    String type;
     MessageVO.Content content;
     LocalDateTime sendTime;
     Integer userName;
@@ -35,8 +35,8 @@ public class MessageDTO {
     public int getUid() {return uid;}
     public void setUid(int uid) {this.uid = uid;}
 
-    public Integer getType() {return type;}
-    public void setType(Integer type) {this.type = type;}
+    public String getType() {return type;}
+    public void setType(String type) {this.type = type;}
 
     public MessageVO.Content getContent() {return content;}
     public void setContent(MessageVO.Content content) {this.content = content;}
