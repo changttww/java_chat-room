@@ -20,7 +20,7 @@ public class MessageVO {
     int uid;      // 用户 ID
 
     @Column(name = "type", nullable = false)
-    Integer type;     // 消息类型 (TEXT, IMAGE, EMOJI)
+    String type;     // 消息类型 (TEXT, IMAGE, EMOJI)
 
     @Embedded
     Content content; // 消息内容
@@ -60,11 +60,11 @@ public class MessageVO {
         this.uid = uid;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 
