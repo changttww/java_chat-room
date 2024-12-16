@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-import com.example.chatroom.entity.vo.response.MessageVO;
+import com.example.chatroom.entity.Message;
 
 @Table(name="messages")
 @AllArgsConstructor
@@ -19,7 +19,7 @@ public class MessageDTO {
     int roomId;
     int uid;
     String type;
-    MessageVO.Content content;
+    Message.Content content;
     LocalDateTime sendTime;
     Integer userName;
     Integer userAvatar;
@@ -38,8 +38,8 @@ public class MessageDTO {
     public String getType() {return type;}
     public void setType(String type) {this.type = type;}
 
-    public MessageVO.Content getContent() {return content;}
-    public void setContent(MessageVO.Content content) {this.content = content;}
+    public Message.Content getContent() {return content;}
+    public void setContent(Message.Content content) {this.content = content;}
 
     public LocalDateTime getSendTime() {return sendTime;}
     public void setSendTime(LocalDateTime sendTime) {this.sendTime = sendTime;}

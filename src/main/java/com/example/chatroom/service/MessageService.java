@@ -2,7 +2,7 @@ package com.example.chatroom.service;
 
 import com.example.chatroom.entity.DTO.MessageDTO;
 import com.example.chatroom.entity.vo.request.SendMessageVO;
-import com.example.chatroom.entity.vo.response.MessageVO;
+import com.example.chatroom.entity.Message;
 import com.example.chatroom.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,17 +28,17 @@ public class MessageService {
      * @return success null
      */
     public String saveMessage(SendMessageVO sendMessageVO) {
-        MessageDTO messageDTO = new MessageDTO();
-        messageDTO.setRoomId(sendMessageVO.getRoomId());
-        messageDTO.setUid(sendMessageVO.getUid());
-        messageDTO.setType(sendMessageVO.getType());
-        messageDTO.setContent(sendMessageVO.getContent());
-        messageDTO.setSendTime(LocalDateTime.now());
-        messageDTO.setUserName(sendMessageVO.getUserName());
-        messageDTO.setUserAvatar(sendMessageVO.getUserAvatar());
+        Message message = new Message();
+        message.setRoomId(sendMessageVO.getRoomId());
+        message.setUid(sendMessageVO.getUid());
+        message.setType(sendMessageVO.getType());
+        message.setContent(sendMessageVO.getContent());
+        message.setSendTime(LocalDateTime.now());
+        message.setUserName(sendMessageVO.getUserName());
+        message.setUserAvatar(sendMessageVO.getUserAvatar());
 
         try {
-            messageRepository.saveAndFlush(messageDTO);
+            messageRepository.saveAndFlush(message);
             return null;
         } catch (Exception e) {
             return "消息保存失败: " + e.getMessage();
@@ -52,22 +52,22 @@ public class MessageService {
      * @param since  起始时间
      * @return 群聊信息
      */
-    public List<MessageVO> getMessagesSince(int roomId, LocalDateTime since) {
+    public List<Message> getMessagesSince(int roomId, LocalDateTime since) {
         List<MessageDTO> messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
 
-        List<MessageVO> messageVOList = new ArrayList<>();
+        List<Message> messageList = new ArrayList<>();
         for (MessageDTO messageDTO : messages) {
-            MessageVO messageVO = new MessageVO();
-            messageVO.setRoomId(messageDTO.getRoomId());
-            messageVO.setUid(messageDTO.getUid());
-            messageVO.setType(messageDTO.getType());
-            messageVO.setContent(messageDTO.getContent());
-            messageVO.setSendTime(messageDTO.getSendTime());
-            messageVO.setUserName(messageDTO.getUserName());
-            messageVO.setUserAvatar(messageDTO.getUserAvatar());
+            Message message = new Message();
+            message.setRoomId(messageDTO.getRoomId());
+            message.setUid(messageDTO.getUid());
+            message.setType(messageDTO.getType());
+            message.setContent(messageDTO.getContent());
+            message.setSendTime(messageDTO.getSendTime());
+            message.setUserName(messageDTO.getUserName());
+            message.setUserAvatar(messageDTO.getUserAvatar());
 
-            messageVOList.add(messageVO);
+            messageList.add(message);
         }
-        return messageVOList;
+        return messageList;
     }
 }

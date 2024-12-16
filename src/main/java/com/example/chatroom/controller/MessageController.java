@@ -2,7 +2,7 @@ package com.example.chatroom.controller;
 
 import com.example.chatroom.common.response.Response;
 import com.example.chatroom.entity.vo.request.SendMessageVO;
-import com.example.chatroom.entity.vo.response.MessageVO;
+import com.example.chatroom.entity.Message;
 import com.example.chatroom.WebSocket.WebSocketServer;
 
 import com.example.chatroom.service.MessageService;
@@ -41,11 +41,11 @@ public class MessageController {
      * 同步消息
      */
     @GetMapping("/sync")
-    public Response<List<MessageVO>> syncMessages(@RequestParam int roomId,
-                                                  @RequestParam LocalDateTime lastTime) {
+    public Response<List<Message>> syncMessages(@RequestParam int roomId,
+                                                @RequestParam LocalDateTime lastTime) {
         try {
             // 从数据库获取指定房间自 lastTime 以来的消息
-            List<MessageVO> messages = messageService.getMessagesSince(roomId, lastTime);
+            List<Message> messages = messageService.getMessagesSince(roomId, lastTime);
             return Response.success("Messages fetched successfully",messages);
         } catch (Exception e) {
             //log.error("消息同步失败: " + e.getMessage(), e);
