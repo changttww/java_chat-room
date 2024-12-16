@@ -6,7 +6,6 @@ import com.example.chatroom.entity.vo.response.MessageVO;
 import com.example.chatroom.WebSocket.WebSocketServer;
 
 import com.example.chatroom.service.MessageService;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
