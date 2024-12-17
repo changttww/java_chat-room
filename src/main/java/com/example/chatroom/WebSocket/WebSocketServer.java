@@ -5,27 +5,28 @@ import com.example.chatroom.entity.SendMessageVO;
 import com.example.chatroom.repository.MessageRepository;
 import com.example.chatroom.service.MessageService;
 
-import com.example.chatroom.service.SendMessageVODeserializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Configurable
 @Component
 @ServerEndpoint("/ws/chat/{roomId}/{uid}")
 public class WebSocketServer {
 
-    private com.example.chatroom.repository.MessageRepository MessageRepository;
-    private final MessageService messageService = new MessageService(MessageRepository);
+    @Autowired
+    private MessageRepository messageRepository;
+    @Autowired
+    MessageService messageService = new MessageService(messageRepository);
 
     // 房间与会话的映射表
     static final Map<Integer, Map<Integer, Session>> roomSessions = new ConcurrentHashMap<>();

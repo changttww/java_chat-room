@@ -14,7 +14,8 @@ import java.util.List;
 @Service
 public class MessageService {
 
-    private final MessageRepository messageRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @Autowired
     public MessageService(MessageRepository messageRepository) {

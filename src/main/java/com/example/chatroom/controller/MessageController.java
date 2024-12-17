@@ -5,6 +5,7 @@ import com.example.chatroom.entity.Message;
 import com.example.chatroom.entity.SendMessageVO;
 import com.example.chatroom.WebSocket.WebSocketServer;
 
+import com.example.chatroom.repository.MessageRepository;
 import com.example.chatroom.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
