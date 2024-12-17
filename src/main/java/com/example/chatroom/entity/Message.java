@@ -1,4 +1,4 @@
-package com.example.chatroom.entity.vo.response;
+package com.example.chatroom.entity;
 
 import jakarta.persistence.*;
 
@@ -7,7 +7,7 @@ import java.lang.StringBuilder;
 
 @Entity
 @Table(name = "messages")
-public class MessageVO {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

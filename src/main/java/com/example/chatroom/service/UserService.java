@@ -135,7 +135,7 @@ public class UserService {
         userDTO.setAvatar(user.getAvatar());
 
         // 获取关系列表成员
-        List<UserRelationship> userRelationships = userRelationshipRepository.findByUserid(currentUserId);
+        List<UserRelationship> userRelationships = userRelationshipRepository.findByUserUserid(currentUserId);
 
         // 构建成员信息列表
         List<Map<String, Object>> relationships = userRelationships.stream()
