@@ -29,10 +29,10 @@ public class Message {
     LocalDateTime sendTime;
 
     @Column(name = "userName", nullable = false)
-    Integer userName; // 用户名
+    String userName; // 用户名
 
     @Column(name = "userAvatar", nullable = false)
-    Integer userAvatar; // 用户头像
+    String userAvatar; // 用户头像
 
     // Getters and Setters
 
@@ -84,19 +84,19 @@ public class Message {
         this.sendTime = sendTime;
     }
 
-    public Integer getUserName() {
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserName(Integer userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public Integer getUserAvatar() {
+    public String getUserAvatar() {
         return userAvatar;
     }
 
-    public void setUserAvatar(Integer userAvatar) {
+    public void setUserAvatar(String userAvatar) {
         this.userAvatar = userAvatar;
     }
 

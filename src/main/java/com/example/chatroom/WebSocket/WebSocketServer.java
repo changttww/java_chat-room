@@ -15,11 +15,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@ServerEndpoint("/ws/chat/{roomId}/{userId}")
+@ServerEndpoint("/ws/chat/{roomId}/{uid}")
 public class WebSocketServer {
 
     // 房间与会话的映射表
-    private static final Map<Integer, Map<String, Session>> roomSessions = new ConcurrentHashMap<>();
+    static final Map<Integer, Map<Integer, Session>> roomSessions = new ConcurrentHashMap<>();
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -30,7 +30,7 @@ public class WebSocketServer {
      * @param userId 用户 ID
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("roomId") int roomId, @PathParam("userId") String userId) {
+    public void onOpen(Session session, @PathParam("roomId") int roomId, @PathParam("uid") int userId) {
         roomSessions.computeIfAbsent(roomId, k -> new ConcurrentHashMap<>()).put(userId, session);
         System.out.println("用户 " + userId + " 加入房间 " + roomId);
     }
@@ -43,7 +43,7 @@ public class WebSocketServer {
      * @param userId 用户 ID
      */
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("roomId") int roomId, @PathParam("userId") String userId) {
+    public void onMessage(String message, Session session, @PathParam("roomId") int roomId, @PathParam("uid") int userId) {
         System.out.println("收到来自用户 " + userId + " 的消息: " + message);
         // 这里可以处理消息，例如转发或存储
     }
@@ -55,8 +55,8 @@ public class WebSocketServer {
      * @param userId 用户 ID
      */
     @OnClose
-    public void onClose(Session session, @PathParam("roomId") int roomId, @PathParam("userId") String userId) {
-        Map<String, Session> sessions = roomSessions.get(roomId);
+    public void onClose(Session session, @PathParam("roomId") int roomId, @PathParam("uid") int userId) {
+        Map<Integer, Session> sessions = roomSessions.get(roomId);
         if (sessions != null) {
             sessions.remove(userId);
             if (sessions.isEmpty()) {
@@ -82,7 +82,7 @@ public class WebSocketServer {
      * @param vo 消息对象
      */
     public void sendMessageToRoom(int roomId, SendMessageVO vo) {
-        Map<String, Session> sessions = roomSessions.get(roomId);
+        Map<Integer, Session> sessions = roomSessions.get(roomId);
         if (sessions == null || sessions.isEmpty()) {
             System.out.println("房间" + roomId + "没有活跃的连接。");
             return;
@@ -90,7 +90,7 @@ public class WebSocketServer {
 
         try {
             // 构建接收消息的格式
-            Map<@org.jetbrains.annotations.NotNull String, @org.jetbrains.annotations.NotNull Object> message = Map.of(
+            Map<@NotNull String, @NotNull Object> message = Map.of(
                     "roomId", vo.getRoomId(),
                     "uid", vo.getUid(),
                     "type", vo.getType(),
