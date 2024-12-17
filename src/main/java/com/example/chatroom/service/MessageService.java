@@ -2,7 +2,7 @@ package com.example.chatroom.service;
 
 import com.example.chatroom.entity.Message;
 import com.example.chatroom.entity.DTO.MessageDTO;
-import com.example.chatroom.entity.vo.request.SendMessageVO;
+import com.example.chatroom.entity.SendMessageVO;
 import com.example.chatroom.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class MessageService {
      * @param sendMessageVO 发送来的消息
      * @return success null
      */
-    public String saveMessage(SendMessageVO sendMessageVO) {
+    public Message saveMessage(SendMessageVO sendMessageVO) {
         Message message = new Message();
         message.setRoomId(sendMessageVO.getRoomId());
         message.setUid(sendMessageVO.getUid());
@@ -37,12 +37,8 @@ public class MessageService {
         message.setUserName(sendMessageVO.getUserName());
         message.setUserAvatar(sendMessageVO.getUserAvatar());
 
-        try {
-            messageRepository.saveAndFlush(message);
-            return null;
-        } catch (Exception e) {
-            return "消息保存失败: " + e.getMessage();
-        }
+        messageRepository.saveAndFlush(message);
+        return message;
     }
 
     /**

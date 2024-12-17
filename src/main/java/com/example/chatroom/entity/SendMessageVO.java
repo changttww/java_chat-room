@@ -1,12 +1,14 @@
-package com.example.chatroom.entity.vo.request;
+package com.example.chatroom.entity;
 
-import com.example.chatroom.entity.Message;
+import com.example.chatroom.service.SendMessageVODeserializer;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@JsonDeserialize(using = SendMessageVODeserializer.class)
 public class SendMessageVO {
     Integer roomId;   // 房间 ID
     Integer uid;      // 用户 ID

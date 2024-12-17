@@ -2,7 +2,7 @@ package com.example.chatroom.controller;
 
 import com.example.chatroom.common.response.Response;
 import com.example.chatroom.entity.Message;
-import com.example.chatroom.entity.vo.request.SendMessageVO;
+import com.example.chatroom.entity.SendMessageVO;
 import com.example.chatroom.WebSocket.WebSocketServer;
 
 import com.example.chatroom.service.MessageService;
@@ -26,10 +26,10 @@ public class MessageController {
     @PostMapping("/send")
     public Response<Void> sendMessage(@RequestBody SendMessageVO vo) {
         try {
-            // 推送消息到指定房间
-            webSocketServer.sendMessageToRoom(vo.getRoomId(), vo);
             // 保存消息到数据库
-            messageService.saveMessage(vo);
+            Message message = messageService.saveMessage(vo);
+            // 推送消息到指定房间
+            webSocketServer.sendMessageToRoom(message.getRoomId(), message);
         } catch (Exception e) {
             //log.error("消息发送失败: {}", e.getMessage());
             return Response.error("发送消息失败");
