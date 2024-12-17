@@ -1,6 +1,6 @@
 package com.example.chatroom.entity;
 
-import com.example.chatroom.service.SendMessageVODeserializer;
+import com.example.chatroom.service.aboutMsg.SendMessageVODeserializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.chatroom.service;
+package com.example.chatroom.service.aboutMsg;
 
 import com.example.chatroom.entity.Message;
 import com.example.chatroom.entity.SendMessageVO;

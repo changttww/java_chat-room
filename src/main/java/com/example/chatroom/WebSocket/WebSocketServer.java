@@ -4,6 +4,7 @@ import com.example.chatroom.entity.Message;
 import com.example.chatroom.entity.SendMessageVO;
 import com.example.chatroom.repository.MessageRepository;
 import com.example.chatroom.service.MessageService;
+import com.example.chatroom.context.SpringContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketServer {
 
     @Autowired
-    private MessageRepository messageRepository;
+    private MessageRepository messageRepository = SpringContext.getBean(MessageRepository.class);
     @Autowired
     MessageService messageService = new MessageService(messageRepository);
 

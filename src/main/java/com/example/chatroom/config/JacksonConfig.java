@@ -1,7 +1,7 @@
 package com.example.chatroom.config;
 
 import com.example.chatroom.entity.SendMessageVO;
-import com.example.chatroom.service.SendMessageVODeserializer;
+import com.example.chatroom.service.aboutMsg.SendMessageVODeserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

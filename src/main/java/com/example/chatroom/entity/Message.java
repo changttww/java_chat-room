@@ -13,10 +13,10 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;     //主键id，自动生成
 
-    @Column(name = "roomId", nullable = false)
+    @Column(name = "room_id", nullable = false)
     int roomId;   // 房间 ID
 
-    @Column(name = "uid", nullable = false)
+    @Column(name = "user_id", nullable = false)
     int uid;      // 用户 ID
 
     @Column(name = "type", nullable = false)
@@ -25,13 +25,13 @@ public class Message {
     @Embedded
     Content content; // 消息内容
 
-    @Column(name = "sendTime", nullable = false)
+    @Column(name = "send_time", nullable = false)
     LocalDateTime sendTime;
 
-    @Column(name = "userName", nullable = false)
+    @Column(name = "user_name", nullable = false)
     String userName; // 用户名
 
-    @Column(name = "userAvatar", nullable = false)
+    @Column(name = "user_avatar", nullable = false)
     String userAvatar; // 用户头像
 
     // Getters and Setters
@@ -56,8 +56,8 @@ public class Message {
         return uid;
     }
 
-    public void setUid(int uid) {
-        this.uid = uid;
+    public void setUid(int user_id) {
+        this.uid = user_id;
     }
 
     public String getType() {
