@@ -600,20 +600,20 @@
 
 #### **4.2 消息格式**
 - **发送格式：**
-  ```json
-  {
+```json
+{
   "roomId": "123",
   "uid": "001",
   "type": "TEXT",  // 消息类型可能是TEXT, IMAGE, EMOJI
   "content": {
-  "text": "Hello, world!",
-  "url": null, // 图片资源的URL
-  "meta": null // 附加信息，图片宽、高等等
+    "text": "Hello, world!",
+    "url": null, // 图片资源的URL
+    "meta": null // 附加信息，图片宽、高等等
   },
   "userName":"UserA",
   "userAvatar":"...." // 用户头像url
-  }
-  ```
+}
+```
 - **接收格式：**
   ```json
   {

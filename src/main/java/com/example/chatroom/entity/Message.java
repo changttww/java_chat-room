@@ -143,8 +143,8 @@ public class Message {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("Content{")
-                    .append("text='").append(text).append('\'')
-                    .append(", url='").append(url).append('\'')
+                    .append("text='").append(text).append('\"')
+                    .append(", url='").append(url).append('\"')
                     .append(", meta=").append(meta)  // 会调用 Meta 的 toString 方法
                     .append('}');
             return sb.toString();
@@ -190,13 +190,13 @@ public class Message {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Message{")
-                .append(", roomId=").append(roomId)
+                .append(" roomId=").append(roomId)
                 .append(", uid=").append(uid)
-                .append(", type='").append(type).append('\'')
+                .append(", type='").append(type).append('\"')
                 .append(", content=").append(content)  // 会调用 Content 的 toString 方法
                 .append(", sendTime=").append(sendTime)
-                .append(", userName='").append(userName).append('\'')
-                .append(", userAvatar='").append(userAvatar).append('\'')
+                .append(", userName='").append(userName).append('\"')
+                .append(", userAvatar='").append(userAvatar).append('\"')
                 .append('}');
         return sb.toString();
     }

@@ -14,10 +14,10 @@ import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
-import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jetbrains.annotations.Nullable;
 
 @Configurable
 @Component
@@ -103,26 +103,9 @@ public class WebSocketServer {
         }
 
         try {
-            // 构建接收消息的格式
-            Map<@NotNull String, @NotNull Object> send = Map.of(
-                    "roomId", message.getRoomId(),
-                    "uid", message.getUid(),
-                    "type", message.getType(),
-                    "content", Map.of(
-                            "text", message.getContent().getText(),
-                            "url", message.getContent().getUrl(),
-                            "meta", message.getContent().getMeta() == null ? null : Map.of(
-                                    "width", message.getContent().getMeta().getWidth(),
-                                    "height", message.getContent().getMeta().getHeight()
-                            )
-                    ),
-                    "sendTime", message.getSendTime(),
-                    "userName", message.getUserName(),
-                    "userAvatar", message.getUserAvatar()
-            );
-
             // 序列化为 JSON
-            String messageJson = objectMapper.writeValueAsString(send);
+            String messageJson = message.toString();
+            System.out.println(messageJson);
 
             // 广播消息
             for (Session session : sessions.values()) {
