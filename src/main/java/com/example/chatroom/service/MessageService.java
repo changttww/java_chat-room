@@ -38,7 +38,7 @@ public class MessageService {
         message.setUserName(sendMessageVO.getUserName());
         message.setUserAvatar(sendMessageVO.getUserAvatar());
 
-        messageRepository.saveAndFlush(message);
+        //messageRepository.saveAndFlush(message);
         return message;
     }
 
