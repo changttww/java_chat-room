@@ -115,6 +115,16 @@ public class RoomController {
         }
     }
 
+    @GetMapping("/myroom-search")
+    public Response<List<Room>> searchMyRooms(@RequestBody RoomDTO roomDTO) {
+        try {
+            List<Room> rooms = roomService.searchRooms(roomDTO);
+            return Response.success("Rooms fetched successfully", rooms);
+        } catch (Exception e) {
+            return Response.error("Error searching rooms: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/my-rooms")
     public Response<List<Room>> getMyRooms() {
         try {

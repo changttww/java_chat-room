@@ -360,6 +360,11 @@ public class RoomService {
         return roomRepository.findByRoomNameContaining(roomDTO.getQuery());
     }
 
+    public List<Room> searchMyRooms(RoomDTO roomDTO) {
+        // 查询房间名称包含关键词的房间
+        return roomRepository.findByRoomNameContainingAndOwnerUid(roomDTO.getQuery(),getCurrentUserId());
+    }
+
 
     public List<Room> getMyRooms() {
         Integer currentUserId = getCurrentUserId();

@@ -338,8 +338,7 @@
 **请求参数：**
 ```json
 {
-  "query": "编程",
-  "roomType": "group"
+  "query": "编程"
 }
 ```
 
@@ -496,7 +495,36 @@
       ]
   }
 }
+
 ```
+
+#### **2.13. 搜索房间**
+- **方法类型：** GET
+- **接口路径：** `/api/rooms/myroom-search`
+- **描述：** 按房间名称或类型搜索房间。
+
+**请求参数：**
+```json
+{
+  "query": "编程"
+}
+```
+
+**响应格式：**
+```json
+{
+  "code": 200,
+  "message": "Rooms fetched successfully",
+  "data": [
+    {
+      "roomId": 1,
+      "roomName": "编程爱好者",
+      "roomType": "group",
+      "roomPeopleCount": 50,
+      "maxMembers": 100
+    }
+  ]
+}
 以上设计包含房间管理、成员管理、权限控制等核心功能，提升了聊天室的完整性和用户体验。
 
 ### **3. 消息管理模块**

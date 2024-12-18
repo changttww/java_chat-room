@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication
 @EntityScan(basePackages = {"com.example.chatroom.entity","package com.example.chatroom.entity.vo.response"})
-@MapperScan("com.example.chatroom.mapper")
 public class ChatroomApplication {
 
     public static void main(String[] args) {
