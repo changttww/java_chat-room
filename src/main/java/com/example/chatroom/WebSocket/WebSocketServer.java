@@ -1,25 +1,36 @@
 package com.example.chatroom.WebSocket;
 
-import com.example.chatroom.entity.vo.request.SendMessageVO;
+import com.example.chatroom.entity.Message;
+import com.example.chatroom.entity.SendMessageVO;
+import com.example.chatroom.repository.MessageRepository;
+import com.example.chatroom.service.MessageService;
+import com.example.chatroom.context.SpringContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Configurable
 @Component
-@ServerEndpoint("/ws/chat/{roomId}/{userId}")
+@ServerEndpoint("/ws/chat/{roomId}/{uid}")
 public class WebSocketServer {
 
+    @Autowired
+    private MessageRepository messageRepository = SpringContext.getBean(MessageRepository.class);
+    @Autowired
+    MessageService messageService = new MessageService(messageRepository);
+
     // 房间与会话的映射表
-    private static final Map<Integer, Map<String, Session>> roomSessions = new ConcurrentHashMap<>();
+    static final Map<Integer, Map<Integer, Session>> roomSessions = new ConcurrentHashMap<>();
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -27,12 +38,12 @@ public class WebSocketServer {
      * WebSocket 连接建立时触发
      * @param session WebSocket 会话
      * @param roomId 房间 ID
-     * @param userId 用户 ID
+     * @param uid 用户 ID
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("roomId") int roomId, @PathParam("userId") String userId) {
-        roomSessions.computeIfAbsent(roomId, k -> new ConcurrentHashMap<>()).put(userId, session);
-        System.out.println("用户 " + userId + " 加入房间 " + roomId);
+    public void onOpen(Session session, @PathParam("roomId") int roomId, @PathParam("uid") int uid) {
+        roomSessions.computeIfAbsent(roomId, k -> new ConcurrentHashMap<>()).put(uid, session);
+        System.out.println("用户 " + uid + " 加入房间 " + roomId);
     }
 
     /**
@@ -40,30 +51,33 @@ public class WebSocketServer {
      * @param message 消息内容
      * @param session WebSocket 会话
      * @param roomId 房间 ID
-     * @param userId 用户 ID
+     * @param uid 用户 ID
      */
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("roomId") int roomId, @PathParam("userId") String userId) {
-        System.out.println("收到来自用户 " + userId + " 的消息: " + message);
-        // 这里可以处理消息，例如转发或存储
+    public void onMessage(String message, Session session, @PathParam("roomId") int roomId, @PathParam("uid") int uid) throws JsonProcessingException {
+        System.out.println("收到来自用户 " + uid + " 的消息");
+        // 这里处理消息，转发存储
+        SendMessageVO sendMessageVO = objectMapper.readValue(message, SendMessageVO.class);
+        Message message1 = messageService.saveMessage(sendMessageVO);
+        sendMessageToRoom(roomId, message1);
     }
 
     /**
      * WebSocket 连接关闭时触发
      * @param session WebSocket 会话
      * @param roomId 房间 ID
-     * @param userId 用户 ID
+     * @param uid 用户 ID
      */
     @OnClose
-    public void onClose(Session session, @PathParam("roomId") int roomId, @PathParam("userId") String userId) {
-        Map<String, Session> sessions = roomSessions.get(roomId);
+    public void onClose(Session session, @PathParam("roomId") int roomId, @PathParam("uid") int uid) {
+        Map<Integer, Session> sessions = roomSessions.get(roomId);
         if (sessions != null) {
-            sessions.remove(userId);
+            sessions.remove(uid);
             if (sessions.isEmpty()) {
                 roomSessions.remove(roomId);
             }
         }
-        System.out.println("用户 " + userId + " 离开房间 " + roomId);
+        System.out.println("用户 " + uid + " 离开房间 " + roomId);
     }
 
     /**
@@ -79,10 +93,10 @@ public class WebSocketServer {
     /**
      * 向指定房间广播消息
      * @param roomId 房间 ID
-     * @param vo 消息对象
+     * @param message 消息对象
      */
-    public void sendMessageToRoom(int roomId, SendMessageVO vo) {
-        Map<String, Session> sessions = roomSessions.get(roomId);
+    public void sendMessageToRoom(int roomId, Message message) {
+        Map<Integer, Session> sessions = roomSessions.get(roomId);
         if (sessions == null || sessions.isEmpty()) {
             System.out.println("房间" + roomId + "没有活跃的连接。");
             return;
@@ -90,25 +104,25 @@ public class WebSocketServer {
 
         try {
             // 构建接收消息的格式
-            Map<@org.jetbrains.annotations.NotNull String, @org.jetbrains.annotations.NotNull Object> message = Map.of(
-                    "roomId", vo.getRoomId(),
-                    "uid", vo.getUid(),
-                    "type", vo.getType(),
+            Map<@NotNull String, @NotNull Object> send = Map.of(
+                    "roomId", message.getRoomId(),
+                    "uid", message.getUid(),
+                    "type", message.getType(),
                     "content", Map.of(
-                            "text", vo.getContent().getText(),
-                            "url", vo.getContent().getUrl(),
-                            "meta", vo.getContent().getMeta() == null ? null : Map.of(
-                                    "width", vo.getContent().getMeta().getWidth(),
-                                    "height", vo.getContent().getMeta().getHeight()
+                            "text", message.getContent().getText(),
+                            "url", message.getContent().getUrl(),
+                            "meta", message.getContent().getMeta() == null ? null : Map.of(
+                                    "width", message.getContent().getMeta().getWidth(),
+                                    "height", message.getContent().getMeta().getHeight()
                             )
                     ),
-                    "sendTime", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                    "userName", vo.getUserName(),
-                    "userAvatar", vo.getUserAvatar()
+                    "sendTime", message.getSendTime(),
+                    "userName", message.getUserName(),
+                    "userAvatar", message.getUserAvatar()
             );
 
             // 序列化为 JSON
-            String messageJson = objectMapper.writeValueAsString(message);
+            String messageJson = objectMapper.writeValueAsString(send);
 
             // 广播消息
             for (Session session : sessions.values()) {

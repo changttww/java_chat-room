@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.example.chatroom.entity.Message;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +21,8 @@ public class MessageDTO {
     String type;
     Message.Content content;
     LocalDateTime sendTime;
-    Integer userName;
-    Integer userAvatar;
+    String userName;
+    String userAvatar;
 
     public MessageDTO() {}
 
@@ -45,10 +44,10 @@ public class MessageDTO {
     public LocalDateTime getSendTime() {return sendTime;}
     public void setSendTime(LocalDateTime sendTime) {this.sendTime = sendTime;}
 
-    public Integer getUserName() {return userName;}
-    public void setUserName(Integer userName) {this.userName = userName;}
+    public String getUserName() {return userName;}
+    public void setUserName(String userName) {this.userName = userName;}
 
-    public Integer getUserAvatar() {return userAvatar;}
-    public void setUserAvatar(Integer userAvatar) {this.userAvatar = userAvatar;}
+    public String getUserAvatar() {return userAvatar;}
+    public void setUserAvatar(String userAvatar) {this.userAvatar = userAvatar;}
 
 }
