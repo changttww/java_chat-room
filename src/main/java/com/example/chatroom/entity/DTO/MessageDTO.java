@@ -2,7 +2,6 @@ package com.example.chatroom.entity.DTO;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.example.chatroom.entity.Message;
 
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,9 +16,12 @@ public class MessageDTO {
     Integer id;
 
     int roomId;
-    int uid;
+    int user_id;
     String type;
-    Message.Content content;
+    String text;
+    String url;
+    Integer width;
+    Integer height;
     LocalDateTime sendTime;
     String userName;
     String userAvatar;
@@ -32,14 +34,23 @@ public class MessageDTO {
     public int getRoomId() {return roomId;}
     public void setRoomId(int roomId) {this.roomId = roomId;}
 
-    public int getUid() {return uid;}
-    public void setUid(int uid) {this.uid = uid;}
+    public int getUser_id() {return user_id;}
+    public void setUser_id(int user_id) {this.user_id = user_id;}
 
     public String getType() {return type;}
     public void setType(String type) {this.type = type;}
 
-    public Message.Content getContent() {return content;}
-    public void setContent(Message.Content content) {this.content = content;}
+    public String getText() {return text;}
+    public void setText(String text) {this.text = text;}
+
+    public String getUrl() {return url;}
+    public void setUrl(String url) {this.url = url;}
+
+    public Integer getWidth() {return width;}
+    public void setWidth(Integer width) {this.width = width;}
+
+    public Integer getHeight() {return height;}
+    public void setHeight(Integer height) {this.height = height;}
 
     public LocalDateTime getSendTime() {return sendTime;}
     public void setSendTime(LocalDateTime sendTime) {this.sendTime = sendTime;}

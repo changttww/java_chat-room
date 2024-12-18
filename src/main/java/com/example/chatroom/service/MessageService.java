@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MessageService {
@@ -55,10 +56,24 @@ public class MessageService {
         List<Message> messageVOList = new ArrayList<>();
         for (MessageDTO messageDTO : messages) {
             Message messageVO = new Message();
+            Message.Content content = new Message.Content();
+            Message.Content.Meta meta = null;
+
             messageVO.setRoomId(messageDTO.getRoomId());
-            messageVO.setUid(messageDTO.getUid());
+            messageVO.setUid(messageDTO.getUser_id());
             messageVO.setType(messageDTO.getType());
-            messageVO.setContent(messageDTO.getContent());
+
+            content.setText(messageDTO.getText());
+            content.setUrl(messageDTO.getUrl());
+            messageVO.setContent(content);
+
+            if(Objects.equals(messageVO.getType(), "IMAGE")){
+                meta = new Message.Content.Meta();
+                meta.setWidth(messageDTO.getWidth());
+                meta.setHeight(messageDTO.getHeight());
+            }
+            content.setMeta(meta);
+
             messageVO.setSendTime(messageDTO.getSendTime());
             messageVO.setUserName(messageDTO.getUserName());
             messageVO.setUserAvatar(messageDTO.getUserAvatar());
