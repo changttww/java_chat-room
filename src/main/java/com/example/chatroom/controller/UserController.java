@@ -116,9 +116,10 @@ public class UserController {
         }
     }
 
+
     // 更新密码
-    @PostMapping("/api/users/{uid}")
-    public Response<String> updateUserPassword(@PathVariable("uid") String password) {
+    @PostMapping("/update-password")
+    public Response<String> updateUserPassword(String password) {
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {

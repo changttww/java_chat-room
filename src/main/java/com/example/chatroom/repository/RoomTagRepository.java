@@ -20,7 +20,7 @@ public interface RoomTagRepository extends JpaRepository<RoomTag, Integer> {
 
     @Query(value = "SELECT rt.* " +
             "FROM room_tags rt " +
-            "GROUP BY rt.tag, rt.color " +
+            "GROUP BY rt.tag, rt.color,rt.id " +
             "ORDER BY COUNT(rt.tag) DESC " +
             "LIMIT 20",
             nativeQuery = true)

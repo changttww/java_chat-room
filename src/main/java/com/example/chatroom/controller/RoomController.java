@@ -115,10 +115,10 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/myroom-search")
+    @PostMapping("/myroom-search")
     public Response<List<Room>> searchMyRooms(@RequestBody RoomDTO roomDTO) {
         try {
-            List<Room> rooms = roomService.searchRooms(roomDTO);
+            List<Room> rooms = roomService.searchMyRooms(roomDTO);
             return Response.success("Rooms fetched successfully", rooms);
         } catch (Exception e) {
             return Response.error("Error searching rooms: " + e.getMessage());
@@ -160,8 +160,8 @@ public class RoomController {
 
     //获得6个推荐房间
     @GetMapping("/get6rooms")
-    public Response<List<Room>> get6RecommendedRooms() {
-        List<Room> rooms = roomService.get6RecommendedRooms();
+    public Response<List<RoomDTO>> get6RecommendedRooms() {
+        List<RoomDTO> rooms = roomService.get6RecommendedRooms();
         return Response.success("Recommended rooms fetched successfully", rooms);
     }
 
@@ -200,7 +200,7 @@ public class RoomController {
 
     // 2.13. Get rooms by tag
     @GetMapping("/getRoomsByTag")
-    public Response<List<Room>> getRoomsByTag(@RequestParam String tag) {
+    public Response<List<Room>> getRoomsByTag(String tag) {
         try {
             List<Room> rooms = roomService.getRoomsByTag(tag);
             return Response.success("Rooms fetched successfully", rooms);

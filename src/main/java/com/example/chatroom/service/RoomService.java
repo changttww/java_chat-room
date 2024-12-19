@@ -188,6 +188,7 @@ public class RoomService {
         roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
         roomMemberRepository.save(roomMember);
         room.incrementRoomPeopleCount();
+        roomRepository.save(room);
 
         return Response.success("User joined room successfully",null);
     }
@@ -261,11 +262,7 @@ public class RoomService {
         roomMemberRepository.delete(roomMember);
 
         room.decrementRoomPeopleCount();
-
-        // 如果用户是房主且房间中没有其他成员，解散房间
-        if (room.getOwnerUid().equals(currentUserId) && roomMemberRepository.countByRoom_RoomId(roomId) == 0) {
-            roomRepository.delete(room); // 删除房间
-        }
+        roomRepository.save(room);
 
         return "Left room successfully";
     }
@@ -362,7 +359,15 @@ public class RoomService {
 
     public List<Room> searchMyRooms(RoomDTO roomDTO) {
         // 查询房间名称包含关键词的房间
-        return roomRepository.findByRoomNameContainingAndOwnerUid(roomDTO.getQuery(),getCurrentUserId());
+        List<Room> rooms = roomRepository.findByRoomNameContaining(roomDTO.getQuery());
+        List<Room> result = new ArrayList<>();
+        for (Room room : rooms) {
+            Optional<RoomMember> roomMemberOptional = roomMemberRepository.findByRoom_RoomIdAndUserUserid(room.getRoomId(), getCurrentUserId());
+            if (roomMemberOptional.isPresent()) {
+                result.add(room);
+            }
+        }
+        return result;
     }
 
 
@@ -419,8 +424,14 @@ public class RoomService {
 
 
     // 2.9. 获取6个推荐房间
-    public List<Room> get6RecommendedRooms() {
-        return roomRepository.findTop6ByOnlineCount();
+    public List<RoomDTO> get6RecommendedRooms() {
+        List<Room> rooms = roomRepository.findTop6ByOnlineCount();
+        List<RoomDTO> roomDTOs = new ArrayList<>();
+        for(Room room: rooms){
+            RoomDTO roomDTO = getRoomDetails(room.getRoomId());
+            roomDTOs.add(roomDTO);
+        }
+        return roomDTOs;
     }
 
 
@@ -438,6 +449,12 @@ public class RoomService {
         List<RoomDTO> roomDTOs = new ArrayList<>();
         for (RoomMember roomMember : roomMembers) {
             Room room = roomMember.getRoom();
+            RoomDTO roomDTO = getRoomDetails(room.getRoomId());
+            roomDTOs.add(roomDTO);
+        }
+        Integer currentUserId = getCurrentUserId();
+        List<Room> rooms = roomRepository.findByOwnerUid(currentUserId);
+        for(Room room:rooms){
             RoomDTO roomDTO = getRoomDetails(room.getRoomId());
             roomDTOs.add(roomDTO);
         }

@@ -6,7 +6,7 @@
 
 #### **1.1 用户注册**
 - **方法类型：** POST  
-- **接口路径：** `@/register`  
+- **接口路径：** `api/users/register`  
 - **请求参数：**
   ```json
   {
@@ -25,7 +25,7 @@
 
 #### **1.2 用户登录**
 - **方法类型：** POST  
-- **接口路径：** `@/login`  
+- **接口路径：** `api/users/login`  
 - **请求参数：**
   ```json
   {
@@ -46,8 +46,8 @@
 - **说明：** 用户登录成功后，返回 JWT Token 用于身份验证。
 
 #### **1.3 获取用户信息**
-- **方法类型：** GET  
-- **接口路径：** `/own`  
+- **方法类型：** Post  
+- **接口路径：** `api/users/own`  
 - **请求参数：**
   - headers: {
         'Authorization': `Bearer ${token}`
@@ -69,8 +69,8 @@
 
 #### **1.4 更新用户信息**
 - **说明：** 更新用户的头像。
-- **方法类型：** PATCH
-- **接口路径：** `@/upload-avatar`  
+- **方法类型：** POST
+- **接口路径：** `api/users/upload-avatar`  
 - **请求参数：**
   ```json
   {
@@ -88,8 +88,8 @@
   }
   ```
 - **说明：** 更新用户的用户名。
-- - **方法类型：** PATCH
-- **接口路径：** `@/upload-username`  
+- - **方法类型：** POST
+- **接口路径：** `api/users/upload-username`  
 - **请求参数：**
   ```json
   {
@@ -107,8 +107,8 @@
   }
   ```
 - **说明：** 更新用户的密码。
-- - **方法类型：** PUT  
-- **接口路径：** `/api/users/{uid}`  
+- - **方法类型：** POST
+- **接口路径：** `/api/users/upload-password
 - **请求参数：**
   ```json
   {
@@ -333,7 +333,7 @@
 #### **2.8. 搜索房间**
 - **方法类型：** GET
 - **接口路径：** `/api/rooms/search`
-- **描述：** 按房间名称或类型搜索房间。
+- **描述：** 按房间名称搜索房间。
 
 **请求参数：**
 ```json
@@ -525,8 +525,39 @@
     }
   ]
 }
-以上设计包含房间管理、成员管理、权限控制等核心功能，提升了聊天室的完整性和用户体验。
 
+```
+---
+
+### 2.15 根据房间 ID 获取房间详情 (`/api/rooms/getRoomsByRoomId`)
+
+**方法类型：** GET  
+**接口路径：** `/api/rooms/getRoomsByRoomId`  
+**请求参数：**
+```json
+{
+  "roomId": 1
+}
+```
+**响应格式：**
+```json
+{
+  "code": 200,
+  "message": "Room details fetched successfully",
+  "data": {
+    "roomId": 1,
+    "roomName": "编程爱好者",
+    "roomType": "group",
+    "roomPeopleCount": 50,
+    "maxMembers": 100,
+    "roomTags": ["编程", "学习"]
+  }
+}
+```
+---
+        
+        
+        
 ### **3. 消息管理模块**
 
 #### **3.1 发送消息**

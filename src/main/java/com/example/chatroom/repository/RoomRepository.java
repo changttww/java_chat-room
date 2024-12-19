@@ -23,7 +23,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     List<Room> findByRoomNameContainingAndOwnerUid(String query,Integer ownerUid);
 
     // 获取在线人数最多的前6个房间
-    @Query(value = "SELECT * FROM chat_room ORDER BY online_count DESC LIMIT 6", nativeQuery = true)
+    @Query(value = "SELECT * FROM chat_room WHERE room_type = 'public' ORDER BY online_count DESC LIMIT 6", nativeQuery = true)
     List<Room> findTop6ByOnlineCount();
 
 }
