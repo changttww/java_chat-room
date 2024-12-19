@@ -78,7 +78,7 @@ public class UserService {
     // 用户注册
     public Response<User> registerUser(User user) {
         // 检查用户名是否已经存在
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return Response.error("Username already taken");
         }
 
@@ -134,21 +134,21 @@ public class UserService {
         userDTO.setUsername(user.getUsername());
         userDTO.setAvatar(user.getAvatar());
 
-        // 获取关系列表成员
-        List<UserRelationship> userRelationships = userRelationshipRepository.findByUserUserid(currentUserId);
-
-        // 构建成员信息列表
-        List<Map<String, Object>> relationships = userRelationships.stream()
-                .map(other -> {
-                    Map<String, Object> otherInfo = new HashMap<>();
-                    otherInfo.put("userId", other.getUser().getUserid());
-                    otherInfo.put("username", other.getUser().getUsername());
-                    otherInfo.put("avatar", other.getUser().getAvatar());
-                    return otherInfo;
-                })
-                .collect(Collectors.toList());
-
-        userDTO.setRelationships(relationships);
+//        // 获取关系列表成员
+//        List<UserRelationship> userRelationships = userRelationshipRepository.findByUserUserid(currentUserId);
+//
+//        // 构建成员信息列表
+//        List<Map<String, Object>> relationships = userRelationships.stream()
+//                .map(other -> {
+//                    Map<String, Object> otherInfo = new HashMap<>();
+//                    otherInfo.put("userId", other.getUser().getUserid());
+//                    otherInfo.put("username", other.getUser().getUsername());
+//                    otherInfo.put("avatar", other.getUser().getAvatar());
+//                    return otherInfo;
+//                })
+//                .collect(Collectors.toList());
+//
+//        userDTO.setRelationships(relationships);
 
         return Response.success("User info fetched successfully", userDTO);
     }
