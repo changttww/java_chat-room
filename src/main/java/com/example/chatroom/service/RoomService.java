@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -478,6 +479,13 @@ public class RoomService {
         return result;
     }
 
+    public List<Room> getRoomsByRoomId(Integer roomId){
+         Optional<Room> roomOptional = roomRepository.findByRoomId(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new RuntimeException("Room not found");
+        }
+        return  roomOptional.stream().toList();
+    }
 
 
 

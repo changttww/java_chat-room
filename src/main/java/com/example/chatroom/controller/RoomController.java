@@ -199,8 +199,8 @@ public class RoomController {
     }
 
     // 2.13. Get rooms by tag
-    @GetMapping("/getRoomsByTag")
-    public Response<List<Room>> getRoomsByTag(String tag) {
+    @GetMapping("/getRoomsByTag/{tag}")
+    public Response<List<Room>> getRoomsByTag(@PathVariable ("tag") String tag) {
         try {
             List<Room> rooms = roomService.getRoomsByTag(tag);
             return Response.success("Rooms fetched successfully", rooms);
@@ -209,7 +209,17 @@ public class RoomController {
         }
     }
 
-
+    @GetMapping("/getRoomsByRoomId/{roomId}")
+    public Response<List<Room>> getRoomsByRoomId(@PathVariable("roomId") Integer roomId)
+    {
+        try{
+            List<Room> rooms = roomService.getRoomsByRoomId(roomId);
+            return Response.success("Rooms  fetched sucessfully", rooms);
+        }
+        catch (Exception e){
+            return Response.error("Error fetching rooms by roomId:" + e.getMessage()) ;
+        }
+    }
 
 
 

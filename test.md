@@ -468,14 +468,10 @@
 ---
 #### **2.13. 通过标签获得房间
 - **方法类型：** GET
-- **接口路径：** `api/rooms/getRoomsByTag`
+- **接口路径：** `api/rooms/getRoomsByTag/{Tag}`
 
 **请求参数：**
- ```json
-{
-     "tag":"string"
-}
-```
+
   **响应格式：**
 ```json
 {
@@ -532,13 +528,9 @@
 ### 2.15 根据房间 ID 获取房间详情 (`/api/rooms/getRoomsByRoomId`)
 
 **方法类型：** GET  
-**接口路径：** `/api/rooms/getRoomsByRoomId`  
+**接口路径：** `/api/rooms/getRoomsByRoomId/{roomId}`  
 **请求参数：**
-```json
-{
-  "roomId": 1
-}
-```
+
 **响应格式：**
 ```json
 {
