@@ -1,5 +1,6 @@
 package com.example.chatroom.entity;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class Message {
     Content content; // 消息内容
 
     @Column(name = "send_time", nullable = false)
+            @JSONField(format = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime sendTime;
 
     @Column(name = "user_name", nullable = false)

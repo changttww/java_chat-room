@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +53,13 @@ public class MessageService {
      */
     public List<Message> getMessagesSince(int roomId, LocalDateTime since) {
         System.out.println("roomId = " + roomId + ", since = " + since);
-        List<Message> messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
+        List<Message> messages;
+
+        if(since == null) {
+            messages = messageRepository.findByRoomId(roomId);
+        }else{
+            messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
+        }
 
         /*List<Message> messageVOList = new ArrayList<>();
         for (MessageDTO messageDTO : messages) {
@@ -82,5 +89,82 @@ public class MessageService {
             messageVOList.add(messageVO);
         }*/
         return messages;
+    }
+
+    /**
+     * 获取群聊信息
+     *
+     * @param roomId 房间号
+     * @param since  起始时间
+     * @return 群聊信息
+     */
+    public List<String> getMessagesStringSince(int roomId, LocalDateTime since) {
+        System.out.println("roomId = " + roomId + ", since = " + since);
+
+        List<String> messagesList = new ArrayList<>();
+
+        List<Message> messages;
+        if(since == null) {
+            messages = messageRepository.findByRoomId(roomId);
+        }else{
+            messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
+        }
+
+        for (Message message : messages) {
+            String messageString = message.toString();
+            messagesList.add(messageString);
+        }
+
+        return messagesList;
+    }
+
+    /**
+     * 获取群聊信息
+     *
+     * @param roomId 房间号
+     * @param since  起始时间
+     * @return 群聊信息
+     */
+    public List<MessageDTO> getMessageDTOsSince(int roomId, LocalDateTime since) {
+        System.out.println("roomId = " + roomId + ", since = " + since);
+        List<Message> messages;
+
+        if(since == null) {
+            messages = messageRepository.findByRoomId(roomId);
+        }else{
+            messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
+        }
+
+        List<MessageDTO> messageDTOList = new ArrayList<>();
+        for (Message message : messages) {
+            MessageDTO messageDTO = new MessageDTO();
+            Message.Content content = message.getContent();
+
+            messageDTO.setRoomId(message.getRoomId());
+            messageDTO.setUser_id(message.getUid());
+            messageDTO.setType(message.getType());
+
+            if(Objects.equals(messageDTO.getType(),"TEXT")){
+                messageDTO.setText(content.getText());
+            }
+
+            if(Objects.equals(messageDTO.getType(), "IMAGE")){
+                messageDTO.setUrl(content.getUrl());
+
+                Message.Content.Meta meta = content.getMeta();
+                messageDTO.setWidth(meta.getWidth());
+                messageDTO.setHeight(meta.getHeight());
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            String time = message.getSendTime().format(formatter);
+            messageDTO.setSendTime(time);
+
+            messageDTO.setUserName(message.getUserName());
+            messageDTO.setUserAvatar(message.getUserAvatar());
+
+            messageDTOList.add(messageDTO);
+        }
+        return messageDTOList;
     }
 }

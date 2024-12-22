@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Table(name="messages")
 @AllArgsConstructor
@@ -22,7 +21,7 @@ public class MessageDTO {
     String url;
     Integer width;
     Integer height;
-    LocalDateTime sendTime;
+    String sendTime;
     String userName;
     String userAvatar;
 
@@ -52,8 +51,8 @@ public class MessageDTO {
     public Integer getHeight() {return height;}
     public void setHeight(Integer height) {this.height = height;}
 
-    public LocalDateTime getSendTime() {return sendTime;}
-    public void setSendTime(LocalDateTime sendTime) {this.sendTime = sendTime;}
+    public String getSendTime() {return sendTime;}
+    public void setSendTime(String sendTime) {this.sendTime = sendTime;}
 
     public String getUserName() {return userName;}
     public void setUserName(String userName) {this.userName = userName;}
