@@ -18,9 +18,6 @@ public class User {
     @Column(name = "user_name", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "memo", nullable = true, unique = true)
-    private String memo;
-
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -74,14 +71,6 @@ public class User {
         this.avatar = avatar;
     }
 
-    public String getMemo(){
-        return memo;
-    }
-
-    public void setMemo(String memo){
-        this.memo=memo;
-    }
-
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -104,8 +93,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +
-                ", createdAt=" + createdAt + '\'' +
-                ", memo='" + memo +
+                ", createdAt=" + createdAt +
                 '}';
     }
 
