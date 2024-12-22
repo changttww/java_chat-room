@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.lang.StringBuilder;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "messages")
@@ -190,13 +191,16 @@ public class Message {
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String time = sendTime.format(formatter);
+
         StringBuilder sb = new StringBuilder();
         sb.append("{")
                 .append(" \"roomId\": ").append(roomId)
                 .append(", \"uid\": ").append(uid)
                 .append(", \"type\": \"").append(type).append('\"')
                 .append(content)  // 会调用 Content 的 toString 方法
-                .append(", \"sendTime\": ").append(sendTime)
+                .append(", \"sendTime\": ").append(time)
                 .append(", \"userName\": \"").append(userName).append('\"')
                 .append(", \"userAvatar\": \"").append(userAvatar).append('\"')
                 .append('}');

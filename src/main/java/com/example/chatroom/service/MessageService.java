@@ -156,7 +156,7 @@ public class MessageService {
                 messageDTO.setHeight(meta.getHeight());
             }
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String time = message.getSendTime().format(formatter);
             messageDTO.setSendTime(time);
 
