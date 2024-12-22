@@ -58,7 +58,7 @@ public class UserController {
 
     // 用户登录
     @PostMapping("/login")
-    public Response<LoginResponse> loginUser(@RequestBody User user) {
+    public Response<String> loginUser(@RequestBody User user) {
         try {
             return userService.loginUser(user.getUsername(), user.getPassword());
         } catch (Exception e) {

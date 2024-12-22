@@ -24,9 +24,6 @@ public class Room {
     @Column(name = "owner_uid", nullable = false)
     private Integer ownerUid;
 
-    @Column(name = "max_members", nullable = false)
-    private Integer maxMembers;
-
     @Column(name = "invite_code")
     private String inviteCode;
 
@@ -92,14 +89,6 @@ public class Room {
         this.ownerUid = ownerUid;
     }
 
-    public Integer getMaxMembers() {
-        return maxMembers;
-    }
-
-    public void setMaxMembers(Integer maxMembers) {
-        this.maxMembers = maxMembers;
-    }
-
     public String getInviteCode() {
         return inviteCode;
     }
@@ -132,7 +121,6 @@ public class Room {
                 ", roomName='" + roomName + '\'' +
                 ", roomType='" + roomType + '\'' +
                 ", ownerUid=" + ownerUid +
-                ", maxMembers=" + maxMembers +
                 ", inviteCode='" + inviteCode + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

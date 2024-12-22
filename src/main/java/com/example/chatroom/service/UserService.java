@@ -101,10 +101,18 @@ public class UserService {
             token=this.token;
             uid=this.uid;
         }
+
+        String getToken(){
+            return token;
+        }
+
+        Integer getUid(){
+            return uid;
+        }
     }
 
     // 用户登录
-    public Response<LoginResponse> loginUser(String username, String password) {
+    public Response<String> loginUser(String username, String password) {
         // 查找用户
         Optional<User> user = userRepository.findByUsername(username);
 
@@ -127,7 +135,7 @@ public class UserService {
                 .compact();
 
         LoginResponse loginResponse = new LoginResponse(token, user.get().getUserid());
-        return Response.success("Login successful", loginResponse);
+        return Response.success("Login successful", token);
     }
 
     // 获取用户信息

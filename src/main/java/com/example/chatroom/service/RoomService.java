@@ -89,7 +89,6 @@ public class RoomService {
         room.setOwnerUid(currentUserId);
         room.setRoomType(roomDTO.getRoomType());
         room.setRoomName(roomDTO.getRoomName());
-        room.setMaxMembers(roomDTO.getMaxMembers());
         room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().substring(0, 8) : null);
         room.setRoomAvatar(roomDTO.getRoomAvatar());
         room.setDescription(roomDTO.getDescription());
@@ -207,7 +206,6 @@ public class RoomService {
         roomDTO.setRoomId(room.getRoomId());
         roomDTO.setRoomType(room.getRoomType());
         roomDTO.setOwnerUid(room.getOwnerUid());
-        roomDTO.setMaxMembers(room.getMaxMembers());
         roomDTO.setRoomAvatar(room.getRoomAvatar());
         roomDTO.setRoomName(room.getRoomName());
         roomDTO.setInviteCode(room.getInviteCode());
@@ -317,9 +315,6 @@ public class RoomService {
         // 更新房间信息
         if (roomDTO.getRoomName() != null) {
             room.setRoomName(roomDTO.getRoomName());
-        }
-        if (roomDTO.getMaxMembers() != null) {
-            room.setMaxMembers(roomDTO.getMaxMembers());
         }
         if (roomDTO.getRoomAvatar() != null) {
             room.setRoomAvatar(roomDTO.getRoomAvatar());
