@@ -4,6 +4,7 @@ import com.example.chatroom.entity.User;
 import com.example.chatroom.entity.DTO.RoomDTO;
 import com.example.chatroom.entity.DTO.UserDTO;
 import com.example.chatroom.service.UserService;
+import com.example.chatroom.service.UserService.LoginResponse;
 import com.example.chatroom.repository.UserRelationshipRepository;
 import com.example.chatroom.repository.UserRepository;
 import com.example.chatroom.common.response.Response;
@@ -57,7 +58,7 @@ public class UserController {
 
     // 用户登录
     @PostMapping("/login")
-    public Response<String> loginUser(@RequestBody User user) {
+    public Response<LoginResponse> loginUser(@RequestBody User user) {
         try {
             return userService.loginUser(user.getUsername(), user.getPassword());
         } catch (Exception e) {

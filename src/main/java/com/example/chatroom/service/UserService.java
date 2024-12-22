@@ -93,8 +93,18 @@ public class UserService {
         return Response.success("Registration successful", savedUser);
     }
 
+    public class LoginResponse {
+        private String token;
+        private Integer uid;
+
+        LoginResponse(String token,Integer uid){
+            token=this.token;
+            uid=this.uid;
+        }
+    }
+
     // 用户登录
-    public Response<String> loginUser(String username, String password) {
+    public Response<LoginResponse> loginUser(String username, String password) {
         // 查找用户
         Optional<User> user = userRepository.findByUsername(username);
 
@@ -116,7 +126,8 @@ public class UserService {
                 .signWith(SECRET_KEY)  // 使用秘钥进行签名
                 .compact();
 
-        return Response.success("Login successful", token);
+        LoginResponse loginResponse = new LoginResponse(token, user.get().getUserid());
+        return Response.success("Login successful", loginResponse);
     }
 
     // 获取用户信息
