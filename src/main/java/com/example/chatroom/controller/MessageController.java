@@ -50,7 +50,7 @@ public class MessageController {
             return Response.success("Messages fetched successfully",messages);
         } catch (Exception e) {
             //log.error("消息同步失败: " + e.getMessage(), e);
-            return Response.error("消息同步失败");
+            return Response.error("消息同步失败"+e.getMessage());
         }
     }
 }

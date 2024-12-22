@@ -18,5 +18,5 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
      * @param since  起始时间
      * @return 消息列表
      */
-    List<MessageDTO> findByRoomIdAndSendTimeAfter(int roomId, LocalDateTime since);
+    List<Message> findByRoomIdAndSendTimeAfter(int roomId, LocalDateTime since);
 }

@@ -51,9 +51,10 @@ public class MessageService {
      * @return 群聊信息
      */
     public List<Message> getMessagesSince(int roomId, LocalDateTime since) {
-        List<MessageDTO> messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
+        System.out.println("roomId = " + roomId + ", since = " + since);
+        List<Message> messages = messageRepository.findByRoomIdAndSendTimeAfter(roomId, since);
 
-        List<Message> messageVOList = new ArrayList<>();
+        /*List<Message> messageVOList = new ArrayList<>();
         for (MessageDTO messageDTO : messages) {
             Message messageVO = new Message();
             Message.Content content = new Message.Content();
@@ -79,7 +80,7 @@ public class MessageService {
             messageVO.setUserAvatar(messageDTO.getUserAvatar());
 
             messageVOList.add(messageVO);
-        }
-        return messageVOList;
+        }*/
+        return messages;
     }
 }
