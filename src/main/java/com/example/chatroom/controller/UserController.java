@@ -4,7 +4,6 @@ import com.example.chatroom.entity.User;
 import com.example.chatroom.entity.DTO.RoomDTO;
 import com.example.chatroom.entity.DTO.UserDTO;
 import com.example.chatroom.service.UserService;
-import com.example.chatroom.service.UserService.LoginResponse;
 import com.example.chatroom.repository.UserRelationshipRepository;
 import com.example.chatroom.repository.UserRepository;
 import com.example.chatroom.common.response.Response;
