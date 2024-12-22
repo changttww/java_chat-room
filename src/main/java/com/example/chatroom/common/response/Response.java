@@ -2,6 +2,7 @@ package com.example.chatroom.common.response;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import java.lang.System;
 
 public class Response<T> {
     private int code;
@@ -16,10 +17,12 @@ public class Response<T> {
 
     // 静态方法创建常用响应
     public static <T> Response<T> success(String message, T data) {
+        System.out.println(message);
         return new Response<>(200, message, data);  // 修改了返回的状态码为 200
     }
 
     public static <T> Response<T> error(String message) {
+        System.out.println(message);
         return new Response<>(500, message, null);  // 错误响应，状态码为 500
     }
 

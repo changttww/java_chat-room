@@ -109,6 +109,7 @@ public class RoomService {
                 RoomTag roomTag = new RoomTag();
                     roomTag.setRoom(room);
                     roomTag.setTag(tagName);
+                    roomTag.setColor("white");
                 room.getRoomTags().add(roomTag); // 同步更新 Room 的 roomTags 列表
                 roomTagRepository.save(roomTag);
             }

@@ -43,7 +43,7 @@ public class MessageController {
      */
     @GetMapping("/sync")
     public Response<List<Message>> syncMessages(@RequestParam int roomId,
-                                                  @RequestParam LocalDateTime lastTime) {
+                                                  @RequestParam(required = false) LocalDateTime lastTime) {
         try {
             // 从数据库获取指定房间自 lastTime 以来的消息
             List<Message> messages = messageService.getMessagesSince(roomId, lastTime);
