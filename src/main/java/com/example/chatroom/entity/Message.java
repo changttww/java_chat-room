@@ -200,7 +200,7 @@ public class Message {
                 .append(", \"uid\": ").append(uid)
                 .append(", \"type\": \"").append(type).append('\"')
                 .append(content)  // 会调用 Content 的 toString 方法
-                .append(", \"sendTime\": ").append(time)
+                .append(", \"sendTime\": \"").append(time).append('\"')
                 .append(", \"userName\": \"").append(userName).append('\"')
                 .append(", \"userAvatar\": \"").append(userAvatar).append('\"')
                 .append('}');

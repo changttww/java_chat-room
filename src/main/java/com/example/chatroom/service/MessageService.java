@@ -141,7 +141,7 @@ public class MessageService {
             Message.Content content = message.getContent();
 
             messageDTO.setRoomId(message.getRoomId());
-            messageDTO.setUser_id(message.getUid());
+            messageDTO.setUid(message.getUid());
             messageDTO.setType(message.getType());
 
             if(Objects.equals(messageDTO.getType(),"TEXT")){

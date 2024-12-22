@@ -15,7 +15,7 @@ public class MessageDTO {
     Integer id;
 
     int roomId;
-    int user_id;
+    int uid;
     String type;
     String text;
     String url;
@@ -33,8 +33,8 @@ public class MessageDTO {
     public int getRoomId() {return roomId;}
     public void setRoomId(int roomId) {this.roomId = roomId;}
 
-    public int getUser_id() {return user_id;}
-    public void setUser_id(int user_id) {this.user_id = user_id;}
+    public int getUid() {return uid;}
+    public void setUid(int uid) {this.uid = uid;}
 
     public String getType() {return type;}
     public void setType(String type) {this.type = type;}
