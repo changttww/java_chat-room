@@ -84,7 +84,8 @@ public class UserController {
 
     // 更新用户头像
     @PostMapping("/upload-avatar")
-    public Response<String> updateUserAvatar(String avatar) {
+    public Response<String> updateUserAvatar(@RequestBody Map<String, String> request) {
+        String avatar=request.get("avatar");
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
@@ -101,7 +102,9 @@ public class UserController {
 
     // 更新用户名
     @PostMapping("/upload-username")
-    public Response<String> updateUsername(String username) {
+    public Response<String> updateUsername(@RequestBody Map<String, String> request) {
+        String username=request.get("username");
+        System.out.println("Received username: " + username);
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
@@ -119,7 +122,8 @@ public class UserController {
 
     // 更新密码
     @PostMapping("/update-password")
-    public Response<String> updateUserPassword(String password) {
+    public Response<String> updateUserPassword(@RequestBody Map<String, String> request) {
+        String password=request.get("password");
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
