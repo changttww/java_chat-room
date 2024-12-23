@@ -85,6 +85,10 @@ public class User {
         return rooms;
     }
 
+    public List<User> getRelationships() {
+        return relationships;
+    }
+
     // toString, equals 和 hashCode 方法
     @Override
     public String toString() {
