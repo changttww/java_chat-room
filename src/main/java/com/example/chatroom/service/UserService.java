@@ -4,6 +4,7 @@ import com.example.chatroom.entity.Room;
 import com.example.chatroom.entity.RoomMember;
 import com.example.chatroom.entity.User;
 import com.example.chatroom.entity.UserRelationship;
+import com.example.chatroom.entity.UserRelationship;
 import com.example.chatroom.entity.DTO.RoomDTO;
 import com.example.chatroom.entity.DTO.UserDTO;
 import com.example.chatroom.repository.UserRelationshipRepository;
@@ -11,6 +12,9 @@ import com.example.chatroom.repository.UserRepository;
 import com.example.chatroom.common.response.Response;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.sql.Timestamp;
+
+import org.aspectj.asm.internal.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.management.relation.Relation;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -228,7 +234,7 @@ public class UserService {
     }
 
     // 更新黑名单
-    public Response<String> addRelationships(Integer otherid) {
+    public Response<String> addVillain(Integer otherid) {
         // 获取当前用户 ID
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
@@ -245,19 +251,59 @@ public class UserService {
         }
 
         User other = userOptional.get();
+        UserRelationship re = new UserRelationship(user,other,"malo","Un malo",new Timestamp(System.currentTimeMillis()));
 
-        // 检查other是否已经在user的关系列表中
-        if (!user.getRelationships().contains(other)) {
+        boolean relationshipExists = user.getRelationships().stream()
+        .anyMatch(relation -> relation.getOther().equals(other));
+
+        if (!relationshipExists) {
             // 将other添加到user的关系列表中
-            user.getRelationships().add(other);
+            user.getRelationships().add(re);
             // 保存更改
             userRepository.save(user);
+        } else {
+            // 如果关系已存在，可以选择抛出异常或返回错误信息
+            throw new RuntimeException("Relationship already exists");
         }
 
         // 成功情况
         return Response.success("Relationship added successfully", null);
     }
 
-
-
-}
+        // 更新好友
+        public Response<String> addFriend(Integer otherid) {
+            // 获取当前用户 ID
+            Integer currentUserId = getCurrentUserId();
+            Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+            if (userOptional.isEmpty()) {
+                throw new RuntimeException("Current user not found");
+            }
+    
+            User user = userOptional.get();
+    
+            // 获取另一位用户 ID
+            userOptional = userRepository.findByUserid(otherid);
+            if (userOptional.isEmpty()) {
+                throw new RuntimeException("Other user not found");
+            }
+    
+            User other = userOptional.get();
+            UserRelationship re = new UserRelationship(user,other,"amigo","Un amigo",new Timestamp(System.currentTimeMillis()));
+    
+            boolean relationshipExists = user.getRelationships().stream()
+            .anyMatch(relation -> relation.getOther().equals(other));
+    
+            if (!relationshipExists) {
+                // 将other添加到user的关系列表中
+                user.getRelationships().add(re);
+                // 保存更改
+                userRepository.save(user);
+            } else {
+                // 如果关系已存在，可以选择抛出异常或返回错误信息
+                throw new RuntimeException("Relationship already exists");
+            }
+    
+            // 成功情况
+            return Response.success("Relationship added successfully", null);
+        }
+};

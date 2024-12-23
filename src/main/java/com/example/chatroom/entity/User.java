@@ -30,7 +30,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"), // 当前用户在中间表的外键列
         inverseJoinColumns = @JoinColumn(name = "other_id") // 相关用户在中间表的外键列
     )
-    private List<User> relationships = new ArrayList<>();
+    private List<UserRelationship> relationships = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members")
     private List<Room> rooms = new ArrayList<>();  // 用户加入的房间列表
@@ -85,7 +85,7 @@ public class User {
         return rooms;
     }
 
-    public List<User> getRelationships() {
+    public List<UserRelationship> getRelationships() {
         return relationships;
     }
 
