@@ -151,7 +151,11 @@ public class MessageService {
                 contentDTO.setText(content.getText());
             }
 
-            if(Objects.equals(messageDTO.getType(), "IMAGE") || Objects.equals(messageDTO.getType(), "EMOJI")){
+            if(Objects.equals(messageDTO.getType(), "EMOJI")) {
+                contentDTO.setUrl(content.getUrl());
+            }
+
+            if(Objects.equals(messageDTO.getType(), "IMAGE")) {
                 contentDTO.setUrl(content.getUrl());
 
                 Message.Content.Meta meta = content.getMeta();
