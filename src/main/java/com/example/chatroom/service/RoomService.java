@@ -96,6 +96,7 @@ public class RoomService {
         room.setDescription(roomDTO.getDescription());
         room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        room.incrementRoomPeopleCount();
 
         // Save room first and flush to ensure persistence
         room = roomRepository.saveAndFlush(room);
@@ -439,12 +440,7 @@ public class RoomService {
             RoomDTO roomDTO = getRoomDetails(room.getRoomId());
             roomDTOs.add(roomDTO);
         }
-        Integer currentUserId = getCurrentUserId();
-        List<Room> rooms = roomRepository.findByOwnerUid(currentUserId);
-        for(Room room:rooms){
-            RoomDTO roomDTO = getRoomDetails(room.getRoomId());
-            roomDTOs.add(roomDTO);
-        }
+
         return roomDTOs;
     }
 
