@@ -144,16 +144,22 @@ public class MessageService {
             messageDTO.setUid(message.getUid());
             messageDTO.setType(message.getType());
 
+            MessageDTO.Content contentDTO = new MessageDTO.Content();
+            messageDTO.setContent(contentDTO);
+
             if(Objects.equals(messageDTO.getType(),"TEXT")){
-                messageDTO.setText(content.getText());
+                contentDTO.setText(content.getText());
             }
 
             if(Objects.equals(messageDTO.getType(), "IMAGE")){
-                messageDTO.setUrl(content.getUrl());
+                contentDTO.setUrl(content.getUrl());
 
                 Message.Content.Meta meta = content.getMeta();
-                messageDTO.setWidth(meta.getWidth());
-                messageDTO.setHeight(meta.getHeight());
+                MessageDTO.Content.Meta metaDTO = new MessageDTO.Content.Meta();
+                contentDTO.setMeta(metaDTO);
+
+                metaDTO.setWidth(meta.getWidth());
+                metaDTO.setHeight(meta.getHeight());
             }
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
