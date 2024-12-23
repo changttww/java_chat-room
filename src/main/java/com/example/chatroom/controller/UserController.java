@@ -138,21 +138,21 @@ public class UserController {
         }
     }
 
-    // // 更新关系列表
-    // @PostMapping("/relationships")
-    // public Response<String> updateRelationships(String username, string action) {
-    //     Integer currentUserId = getCurrentUserId();
-    //     Optional<User> userOptional = userRepository.findByUserid(currentUserId);
-    //     if (userOptional.isEmpty()) {
-    //         throw new RuntimeException("User not found");
-    //     }
+    // 更新关系列表
+    @PostMapping("/relationships")
+    public Response<String> updateRelationships(Integer otherid) {
+        Integer currentUserId = getCurrentUserId();
+        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     try {
-    //         return userService.updateUsername(username);
-    //     } catch (Exception e) {
-    //         // 如果发生错误，返回失败响应
-    //         return Response.error("Error set relationships: " + e.getMessage());
-    //     }
-    // }
+        try {
+            return userService.addRelationships(otherid);
+        } catch (Exception e) {
+            // 如果发生错误，返回失败响应
+            return Response.error("Error set relationships: " + e.getMessage());
+        }
+    }
     
 }

@@ -228,12 +228,12 @@ public class UserService {
     }
 
     // 更新黑名单
-    public Response<String> addRelationships(Integer otherid, String action){
+    public Response<String> addRelationships(Integer otherid) {
         // 获取当前用户 ID
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("Current user not found");
         }
 
         User user = userOptional.get();
@@ -241,27 +241,23 @@ public class UserService {
         // 获取另一位用户 ID
         userOptional = userRepository.findByUserid(otherid);
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found");
+            throw new RuntimeException("Other user not found");
         }
 
         User other = userOptional.get();
 
-        if(action=="add"){
-
-        }
-        else if(action=="remove"){
-            return Response.error("User not found");
-        }
-        else{
-            return Response.error("Invalid action");
+        // 检查other是否已经在user的关系列表中
+        if (!user.getRelationships().contains(other)) {
+            // 将other添加到user的关系列表中
+            user.getRelationships().add(other);
+            // 保存更改
+            userRepository.save(user);
         }
 
-
-        userRepository.save(user);
-        
-        // 失败情况
-        return Response.success("User info updated successfully",null);
+        // 成功情况
+        return Response.success("Relationship added successfully", null);
     }
+
 
 
 }
