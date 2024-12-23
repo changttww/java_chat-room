@@ -81,82 +81,72 @@ public class RoomService {
 
 
 
-    // 创建房间
     public Room createRoom(RoomDTO roomDTO) {
         Integer currentUserId = getCurrentUserId();
-
         Room room = new Room();
         room.setOwnerUid(currentUserId);
         room.setRoomType(roomDTO.getRoomType());
         room.setRoomName(roomDTO.getRoomName());
-        room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().substring(0, 8) : null);
-        room.setRoomAvatar(roomDTO.getRoomAvatar());
+        room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().replace("-", "").substring(0, 8) : null);
+        if (roomDTO.getRoomAvatar() == null || roomDTO.getRoomAvatar().isEmpty()) {
+            room.setRoomAvatar("/images/ENFP-竞选者.png");
+        } else {
+            room.setRoomAvatar(roomDTO.getRoomAvatar());
+        }
         room.setDescription(roomDTO.getDescription());
         room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-
-        // Save room and add the current user and receiver (if private);
         // Save room first and flush to ensure persistence
         room = roomRepository.saveAndFlush(room);
 
-        // 处理房间标签
+        // Add the current user and receiver to the room
+        RoomMember roomMember = new RoomMember();
+        roomMember.setRoom(room);
+        roomMember.setUser(getCurrentUser());
+        roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+        roomMemberRepository.saveAndFlush(roomMember);
+
+        // Process tags
         if (roomDTO.getTags() != null && !roomDTO.getTags().isEmpty()) {
             for (String tagName : roomDTO.getTags()) {
-                // Check if tag already exists
-
                 RoomTag roomTag = new RoomTag();
-                    roomTag.setRoom(room);
-                    roomTag.setTag(tagName);
-                    roomTag.setColor("white");
-                room.getRoomTags().add(roomTag); // 同步更新 Room 的 roomTags 列表
-                roomTagRepository.save(roomTag);
+                roomTag.setRoom(room);
+                roomTag.setTag(tagName);
+                roomTag.setColor("white");
+                room.getRoomTags().add(roomTag);
+                roomTagRepository.saveAndFlush(roomTag);
             }
         }
 
         if ("private".equalsIgnoreCase(room.getRoomType())) {
-            // 查找所有房间类型为 private 的房间
             List<Room> privateRooms = roomRepository.findByRoomType("private");
 
-            // 遍历所有私聊房间，查找符合条件的房间
-            for (Room room1 : privateRooms) {
-                Integer roomId = room1.getRoomId();
-
-                // 获取房间成员
-                List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(roomId);
+            for (Room existingRoom : privateRooms) {
+                List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(existingRoom.getRoomId());
                 List<Integer> memberIds = roomMembers.stream()
                         .map(member -> member.getUser().getUserid())
                         .toList();
 
-                // 判断是否符合条件
                 boolean isCurrentUserMember = memberIds.contains(currentUserId);
                 boolean isReceiverMember = memberIds.contains(roomDTO.getReceiverUid());
 
-                // 判断情况1：当前用户是创建者且唯一成员是接收者
-                if (room.getOwnerUid().equals(currentUserId) && isReceiverMember) {
-                    return room1; // 返回现有房间
-                }
-
-                // 判断情况2：接收者是创建者且唯一成员是当前用户
-                if (room.getOwnerUid().equals(roomDTO.getReceiverUid()) && isCurrentUserMember) {
-                    return room1; // 返回现有房间
+                if (existingRoom.getOwnerUid().equals(currentUserId) && isReceiverMember ||
+                        existingRoom.getOwnerUid().equals(roomDTO.getReceiverUid()) && isCurrentUserMember) {
+                    return existingRoom;
                 }
             }
 
-            // Add the current user and receiver to the room
-            RoomMember roomMember = new RoomMember();
-            roomMember.setRoom(room);  // 设置房间
-            Optional <User>userOptional = UserRepository.findById(roomDTO.getReceiverUid());
+            RoomMember roomMember1 = new RoomMember();
+            roomMember1.setRoom(room);
+            Optional<User> userOptional = UserRepository.findById(roomDTO.getReceiverUid());
             if (userOptional.isEmpty()) {
-                throw new RuntimeException("User not found");
+                throw new RuntimeException("Receiver user not found");
             }
-            roomMember.setUser(userOptional.get());  // 设置用户
-            roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));  // 设置加入时间
-
-            roomMemberRepository.save(roomMember);  // 保存成员到数据库
+            roomMember1.setUser(userOptional.get());
+            roomMember1.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+            roomMemberRepository.saveAndFlush(roomMember1);
         }
-
-
         return room;
     }
 
