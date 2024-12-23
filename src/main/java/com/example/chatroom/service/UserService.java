@@ -267,7 +267,7 @@ public class UserService {
         }
 
         // 成功情况
-        return Response.success("Relationship added successfully", null);
+        return Response.success("Friend added successfully", null);
     }
 
         // 更新好友
@@ -304,6 +304,6 @@ public class UserService {
             }
     
             // 成功情况
-            return Response.success("Relationship added successfully", null);
+            return Response.success("Villain added successfully", null);
         }
 };

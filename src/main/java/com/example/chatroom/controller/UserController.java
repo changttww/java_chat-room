@@ -140,7 +140,7 @@ public class UserController {
 
     // 更新黑名单
     @PostMapping("/blacklist")
-    public Response<String> updateBlacklist(Integer otherid) {
+    public Response<String> updateBlacklist(@RequestBody Map<String, Integer> request) {
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
@@ -148,6 +148,7 @@ public class UserController {
         }
 
         try {
+            Integer otherid=request.get("userId");
             return userService.addVillain(otherid);
         } catch (Exception e) {
             // 如果发生错误，返回失败响应
@@ -155,21 +156,23 @@ public class UserController {
         }
     }
 
-        // 更新好友
-        @PostMapping("/friendlist")
-        public Response<String> updateFriend(Integer otherid) {
-            Integer currentUserId = getCurrentUserId();
-            Optional<User> userOptional = userRepository.findByUserid(currentUserId);
-            if (userOptional.isEmpty()) {
-                throw new RuntimeException("User not found");
-            }
-    
-            try {
-                return userService.addVillain(otherid);
-            } catch (Exception e) {
-                // 如果发生错误，返回失败响应
-                return Response.error("Error set friendlist: " + e.getMessage());
-            }
+
+    // 更新好友
+    @PostMapping("/friendlist")
+    public Response<String> updateFriendlist(@RequestBody Map<String, Integer> request) {
+        Integer currentUserId = getCurrentUserId();
+        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
         }
+
+        try {
+            Integer otherid=request.get("userId");
+            return userService.addFriend(otherid);
+        } catch (Exception e) {
+            // 如果发生错误，返回失败响应
+            return Response.error("Error set friendlist: " + e.getMessage());
+        }
+    }
     
 }
