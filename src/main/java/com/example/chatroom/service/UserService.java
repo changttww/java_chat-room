@@ -258,8 +258,8 @@ public class UserService {
 
         if (!relationshipExists) {
             // 将other添加到user的关系列表中
+            userRelationshipRepository.save(re);
             user.getRelationships().add(re);
-            // 保存更改
             userRepository.save(user);
         } else {
             // 如果关系已存在，可以选择抛出异常或返回错误信息
@@ -267,7 +267,7 @@ public class UserService {
         }
 
         // 成功情况
-        return Response.success("Friend added successfully", null);
+        return Response.success("Villain added successfully", null);
     }
 
         // 更新好友
@@ -295,8 +295,8 @@ public class UserService {
     
             if (!relationshipExists) {
                 // 将other添加到user的关系列表中
+                userRelationshipRepository.save(re);
                 user.getRelationships().add(re);
-                // 保存更改
                 userRepository.save(user);
             } else {
                 // 如果关系已存在，可以选择抛出异常或返回错误信息
@@ -304,6 +304,6 @@ public class UserService {
             }
     
             // 成功情况
-            return Response.success("Villain added successfully", null);
+            return Response.success("Friend added successfully", null);
         }
 };

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserRelationshipRepository extends JpaRepository<RoomMember, Integer> {
+public interface UserRelationshipRepository extends JpaRepository<UserRelationship, Integer> {
 
     List<UserRelationship> findByUserUserid(Integer userid);
 }
