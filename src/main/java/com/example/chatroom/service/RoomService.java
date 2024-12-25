@@ -84,24 +84,33 @@ public class RoomService {
     public Room createRoom(RoomDTO roomDTO) {
         Integer currentUserId = getCurrentUserId();
 
-        if ("private".equalsIgnoreCase(roomDTO.getRoomType())) {
+        if ("private".equalsIgnoreCase(roomDTO.getRoomType()))
+        {
             List<Room> privateRooms = roomRepository.findByRoomType("private");
-            for (Room existingRoom : privateRooms) {
-                List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(existingRoom.getRoomId());
-                List<Integer> memberIds = roomMembers.stream()
-                        .map(member -> member.getUser().getUserid())
-                        .toList();
-
-                // 检查房间成员是否只有两个，并且包含当前用户和接收用户
-                if (memberIds.contains(currentUserId) &&
-                        memberIds.contains(roomDTO.getReceiverUid())) {
-                    return existingRoom;
-                }
-                else
+            if (!privateRooms.isEmpty())
+            {
+                for (Room existingRoom : privateRooms)
                 {
+                    List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(existingRoom.getRoomId());
+                    List<Integer> memberIds = roomMembers.stream()
+                            .map(member -> member.getUser().getUserid())
+                            .toList();
+
+                    // 检查房间成员是否只有两个，并且包含当前用户和接收用户
+                    if (memberIds.contains(currentUserId) &&
+                            memberIds.contains(roomDTO.getReceiverUid()))
+                    {
+                        return existingRoom;
+                    }
+                }
+            }
+            else
+            {
                     Room room1 = new Room();
                     room1.setOwnerUid(currentUserId);
                     room1.setRoomType(roomDTO.getRoomType());
+                    room1.incrementRoomPeopleCount();
+                    room1.incrementRoomPeopleCount();
                     room1 = roomRepository.saveAndFlush(room1);
                     RoomMember roomMember1 = new RoomMember();
                     roomMember1.setRoom(room1);
@@ -119,9 +128,9 @@ public class RoomService {
                     roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
                     roomMemberRepository.saveAndFlush(roomMember);
                     return room1;
-                }
             }
         }
+
         else
         {
             Room room = new Room();
@@ -157,6 +166,7 @@ public class RoomService {
                     roomTag.setTag(tagName);
                     roomTag.setColor("white");
                     room.getRoomTags().add(roomTag);
+
                     roomTagRepository.saveAndFlush(roomTag);
                 }
             }
