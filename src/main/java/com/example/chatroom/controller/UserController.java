@@ -82,6 +82,22 @@ public class UserController {
         }
     }
 
+    // 获取任一用户信息
+    @GetMapping("/getInfo/{userid}")
+    public Response<UserDTO> getAnyUserInfo(@PathVariable("userid") Integer userid) {
+        Optional<User> userOptional = userRepository.findByUserid(userid);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        try {
+            return userService.getAnyUserInfo(userid);
+        } catch (Exception e) {
+            // 如果发生错误，返回失败响应
+            return Response.error("Error fetching user info: " + e.getMessage());
+        }
+    }
+
     // 更新用户头像
     @PostMapping("/upload-avatar")
     public Response<String> updateUserAvatar(@RequestBody Map<String, String> request) {

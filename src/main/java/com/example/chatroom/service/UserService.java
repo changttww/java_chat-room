@@ -164,21 +164,23 @@ public class UserService {
         userDTO.setUsername(user.getUsername());
         userDTO.setAvatar(user.getAvatar());
 
-//        // 获取关系列表成员
-//        List<UserRelationship> userRelationships = userRelationshipRepository.findByUserUserid(currentUserId);
-//
-//        // 构建成员信息列表
-//        List<Map<String, Object>> relationships = userRelationships.stream()
-//                .map(other -> {
-//                    Map<String, Object> otherInfo = new HashMap<>();
-//                    otherInfo.put("userId", other.getUser().getUserid());
-//                    otherInfo.put("username", other.getUser().getUsername());
-//                    otherInfo.put("avatar", other.getUser().getAvatar());
-//                    return otherInfo;
-//                })
-//                .collect(Collectors.toList());
-//
-//        userDTO.setRelationships(relationships);
+
+        return Response.success("User info fetched successfully", userDTO);
+    }
+
+    // 获取任一用户信息
+    public Response<UserDTO> getAnyUserInfo(Integer userid){
+        Optional<User> userOptional = userRepository.findByUserid(userid);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOptional.get();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserid(user.getUserid());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setAvatar(user.getAvatar());
+
 
         return Response.success("User info fetched successfully", userDTO);
     }
