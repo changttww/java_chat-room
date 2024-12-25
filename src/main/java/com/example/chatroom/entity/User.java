@@ -86,7 +86,7 @@ public class User {
     }
 
     public List<UserRelationship> getRelationships() {
-        return relationships;
+        return relationships = new ArrayList<>();
     }
 
     // toString, equals 和 hashCode 方法

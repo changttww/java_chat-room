@@ -1,6 +1,8 @@
 package com.example.chatroom.controller;
 
+import com.example.chatroom.entity.Room;
 import com.example.chatroom.entity.User;
+import com.example.chatroom.entity.UserRelationship;
 import com.example.chatroom.entity.DTO.RoomDTO;
 import com.example.chatroom.entity.DTO.UserDTO;
 import com.example.chatroom.service.UserService;
@@ -174,7 +176,7 @@ public class UserController {
 
     // 移除黑名单
     @PostMapping("/removeblacklist")
-    public Response<String> deleteBlacklist(@RequestBody Map<String, Integer> request) {
+    public Response<String> removeBlacklist(@RequestBody Map<String, Integer> request) {
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
@@ -190,10 +192,9 @@ public class UserController {
         }
     }
 
-
-    // 更新好友
-    @PostMapping("/friendlist")
-    public Response<String> updateFriendlist(@RequestBody Map<String, Integer> request) {
+    // 展示黑名单
+    @GetMapping("/getblacklist")
+    public Response<List<UserRelationship>> getBlacklist() {
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
@@ -201,12 +202,30 @@ public class UserController {
         }
 
         try {
-            Integer otherid=request.get("userId");
-            return userService.addFriend(otherid);
+            return userService.getBlacklist();
         } catch (Exception e) {
             // 如果发生错误，返回失败响应
-            return Response.error("Error set friendlist: " + e.getMessage());
+            return Response.error("Error get blacklist: " + e.getMessage());
         }
     }
+
+
+    // // 更新好友
+    // @PostMapping("/friendlist")
+    // public Response<String> updateFriendlist(@RequestBody Map<String, Integer> request) {
+    //     Integer currentUserId = getCurrentUserId();
+    //     Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+    //     if (userOptional.isEmpty()) {
+    //         throw new RuntimeException("User not found");
+    //     }
+
+    //     try {
+    //         Integer otherid=request.get("userId");
+    //         return userService.addFriend(otherid);
+    //     } catch (Exception e) {
+    //         // 如果发生错误，返回失败响应
+    //         return Response.error("Error set friendlist: " + e.getMessage());
+    //     }
+    // }
     
 }
