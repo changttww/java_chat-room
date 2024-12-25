@@ -154,9 +154,9 @@ public class UserController {
         }
     }
 
-    // 更新黑名单
-    @PostMapping("/blacklist")
-    public Response<String> updateBlacklist(@RequestBody Map<String, Integer> request) {
+    // 加入黑名单
+    @PostMapping("/addblacklist")
+    public Response<String> addBlacklist(@RequestBody Map<String, Integer> request) {
         Integer currentUserId = getCurrentUserId();
         Optional<User> userOptional = userRepository.findByUserid(currentUserId);
         if (userOptional.isEmpty()) {
@@ -166,6 +166,24 @@ public class UserController {
         try {
             Integer otherid=request.get("userId");
             return userService.addVillain(otherid);
+        } catch (Exception e) {
+            // 如果发生错误，返回失败响应
+            return Response.error("Error set blacklist: " + e.getMessage());
+        }
+    }
+
+    // 移除黑名单
+    @PostMapping("/removeblacklist")
+    public Response<String> deleteBlacklist(@RequestBody Map<String, Integer> request) {
+        Integer currentUserId = getCurrentUserId();
+        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        try {
+            Integer otherid=request.get("userId");
+            return userService.removeVillain(otherid);
         } catch (Exception e) {
             // 如果发生错误，返回失败响应
             return Response.error("Error set blacklist: " + e.getMessage());

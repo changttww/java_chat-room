@@ -235,7 +235,49 @@ public class UserService {
         return Response.success("User info updated successfully",null);
     }
 
-    // 更新黑名单
+    // 移出黑名单
+    public Response<String> removeVillain(Integer otherid) {
+        // 获取当前用户 ID
+        Integer currentUserId = getCurrentUserId();
+        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Current user not found");
+        }
+
+        User user = userOptional.get();
+
+        // 获取另一位用户 ID
+        userOptional = userRepository.findByUserid(otherid);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Other user not found");
+        }
+
+        User other = userOptional.get();
+
+        // 查找并移除关系
+        Optional<UserRelationship> relationshipOptional = user.getRelationships().stream()
+            .filter(relation -> relation.getOther().equals(other) && "malo".equals(relation))
+            .findFirst();
+
+        if (relationshipOptional.isPresent()) {
+            UserRelationship relationship = relationshipOptional.get();
+            // 从当前用户的关系列表中移除
+            user.getRelationships().remove(relationship);
+            // 从数据库中删除关系记录
+            userRelationshipRepository.delete(relationship);
+            // 保存更新后的用户信息
+            userRepository.save(user);
+        } else {
+            // 如果关系不存在，可以选择抛出异常或返回错误信息
+            throw new RuntimeException("Relationship does not exist");
+        }
+
+        // 成功情况
+        return Response.success("Villain removed successfully", null);
+    }
+
+
+    // 加入黑名单
     public Response<String> addVillain(Integer otherid) {
         // 获取当前用户 ID
         Integer currentUserId = getCurrentUserId();
@@ -256,6 +298,45 @@ public class UserService {
         UserRelationship re = new UserRelationship(user,other,"malo","Un malo",new Timestamp(System.currentTimeMillis()));
 
         boolean relationshipExists = user.getRelationships().stream()
+        .anyMatch(relation -> relation.getOther().getUserid().equals(other.getUserid()));
+
+        if (!relationshipExists&&other!=user) {
+            // 将other添加到user的关系列表中
+            userRelationshipRepository.save(re);
+            //user.getRelationships().add(re);
+            userRepository.save(user);
+        } else {
+            // 如果关系已存在，可以选择抛出异常或返回错误信息
+            throw new RuntimeException("Invalid create relationship");
+        }
+
+        // 成功情况
+        return Response.success("Villain added successfully", null);
+    }
+
+
+
+    // 更新好友
+    public Response<String> addFriend(Integer otherid) {
+        // 获取当前用户 ID
+        Integer currentUserId = getCurrentUserId();
+        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Current user not found");
+        }
+
+        User user = userOptional.get();
+
+        // 获取另一位用户 ID
+        userOptional = userRepository.findByUserid(otherid);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Other user not found");
+        }
+
+        User other = userOptional.get();
+        UserRelationship re = new UserRelationship(user,other,"amigo","Un amigo",new Timestamp(System.currentTimeMillis()));
+
+        boolean relationshipExists = user.getRelationships().stream()
         .anyMatch(relation -> relation.getOther().equals(other));
 
         if (!relationshipExists) {
@@ -269,43 +350,6 @@ public class UserService {
         }
 
         // 成功情况
-        return Response.success("Villain added successfully", null);
+        return Response.success("Friend added successfully", null);
     }
-
-        // 更新好友
-        public Response<String> addFriend(Integer otherid) {
-            // 获取当前用户 ID
-            Integer currentUserId = getCurrentUserId();
-            Optional<User> userOptional = userRepository.findByUserid(currentUserId);
-            if (userOptional.isEmpty()) {
-                throw new RuntimeException("Current user not found");
-            }
-    
-            User user = userOptional.get();
-    
-            // 获取另一位用户 ID
-            userOptional = userRepository.findByUserid(otherid);
-            if (userOptional.isEmpty()) {
-                throw new RuntimeException("Other user not found");
-            }
-    
-            User other = userOptional.get();
-            UserRelationship re = new UserRelationship(user,other,"amigo","Un amigo",new Timestamp(System.currentTimeMillis()));
-    
-            boolean relationshipExists = user.getRelationships().stream()
-            .anyMatch(relation -> relation.getOther().equals(other));
-    
-            if (!relationshipExists) {
-                // 将other添加到user的关系列表中
-                userRelationshipRepository.save(re);
-                user.getRelationships().add(re);
-                userRepository.save(user);
-            } else {
-                // 如果关系已存在，可以选择抛出异常或返回错误信息
-                throw new RuntimeException("Relationship already exists");
-            }
-    
-            // 成功情况
-            return Response.success("Friend added successfully", null);
-        }
 };
