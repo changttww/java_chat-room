@@ -83,72 +83,96 @@ public class RoomService {
 
     public Room createRoom(RoomDTO roomDTO) {
         Integer currentUserId = getCurrentUserId();
-        Room room = new Room();
-        room.setOwnerUid(currentUserId);
-        room.setRoomType(roomDTO.getRoomType());
-        room.setRoomName(roomDTO.getRoomName());
-        room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().replace("-", "").substring(0, 8) : null);
-        if (roomDTO.getRoomAvatar() == null || roomDTO.getRoomAvatar().isEmpty()) {
-            room.setRoomAvatar("/images/ENFP-竞选者.png");
-        } else {
-            room.setRoomAvatar(roomDTO.getRoomAvatar());
-        }
-        room.setDescription(roomDTO.getDescription());
-        room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-        room.incrementRoomPeopleCount();
 
-        // Save room first and flush to ensure persistence
-        room = roomRepository.saveAndFlush(room);
-
-        // Add the current user and receiver to the room
-        RoomMember roomMember = new RoomMember();
-        roomMember.setRoom(room);
-        roomMember.setUser(getCurrentUser());
-        roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
-        roomMemberRepository.saveAndFlush(roomMember);
-
-        // Process tags
-        if (roomDTO.getTags() != null && !roomDTO.getTags().isEmpty()) {
-            for (String tagName : roomDTO.getTags()) {
-                RoomTag roomTag = new RoomTag();
-                roomTag.setRoom(room);
-                roomTag.setTag(tagName);
-                roomTag.setColor("white");
-                room.getRoomTags().add(roomTag);
-                roomTagRepository.saveAndFlush(roomTag);
-            }
-        }
-
-        if ("private".equalsIgnoreCase(room.getRoomType())) {
+        if ("private".equalsIgnoreCase(roomDTO.getRoomType()))
+        {
             List<Room> privateRooms = roomRepository.findByRoomType("private");
+            if (!privateRooms.isEmpty())
+            {
+                for (Room existingRoom : privateRooms)
+                {
+                    List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(existingRoom.getRoomId());
+                    List<Integer> memberIds = roomMembers.stream()
+                            .map(member -> member.getUser().getUserid())
+                            .toList();
 
-            for (Room existingRoom : privateRooms) {
-                List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(existingRoom.getRoomId());
-                List<Integer> memberIds = roomMembers.stream()
-                        .map(member -> member.getUser().getUserid())
-                        .toList();
-
-                boolean isCurrentUserMember = memberIds.contains(currentUserId);
-                boolean isReceiverMember = memberIds.contains(roomDTO.getReceiverUid());
-
-                if (existingRoom.getOwnerUid().equals(currentUserId) && isReceiverMember ||
-                        existingRoom.getOwnerUid().equals(roomDTO.getReceiverUid()) && isCurrentUserMember) {
-                    return existingRoom;
+                    // 检查房间成员是否只有两个，并且包含当前用户和接收用户
+                    if (memberIds.contains(currentUserId) &&
+                            memberIds.contains(roomDTO.getReceiverUid()))
+                    {
+                        return existingRoom;
+                    }
                 }
             }
-
-            RoomMember roomMember1 = new RoomMember();
-            roomMember1.setRoom(room);
-            Optional<User> userOptional = UserRepository.findById(roomDTO.getReceiverUid());
-            if (userOptional.isEmpty()) {
-                throw new RuntimeException("Receiver user not found");
+            else
+            {
+                    Room room1 = new Room();
+                    room1.setOwnerUid(currentUserId);
+                    room1.setRoomType(roomDTO.getRoomType());
+                    room1.incrementRoomPeopleCount();
+                    room1.incrementRoomPeopleCount();
+                    room1 = roomRepository.saveAndFlush(room1);
+                    RoomMember roomMember1 = new RoomMember();
+                    roomMember1.setRoom(room1);
+                    Optional<User> userOptional = UserRepository.findById(roomDTO.getReceiverUid());
+                    if (userOptional.isEmpty()) {
+                        throw new RuntimeException("Receiver user not found");
+                    }
+                    roomMember1.setUser(userOptional.get());
+                    roomMember1.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+                    roomMemberRepository.saveAndFlush(roomMember1);
+                    // Add the current user and receiver to the room
+                    RoomMember roomMember = new RoomMember();
+                    roomMember.setRoom(room1);
+                    roomMember.setUser(getCurrentUser());
+                    roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+                    roomMemberRepository.saveAndFlush(roomMember);
+                    return room1;
             }
-            roomMember1.setUser(userOptional.get());
-            roomMember1.setJoinedAt(new Timestamp(System.currentTimeMillis()));
-            roomMemberRepository.saveAndFlush(roomMember1);
         }
-        return room;
+
+        else
+        {
+            Room room = new Room();
+            room.setOwnerUid(currentUserId);
+            room.setRoomType(roomDTO.getRoomType());
+            room.setRoomName(roomDTO.getRoomName());
+            room.setInviteCode("group".equals(roomDTO.getRoomType()) ? UUID.randomUUID().toString().replace("-", "").substring(0, 8) : null);
+            if (roomDTO.getRoomAvatar() == null || roomDTO.getRoomAvatar().isEmpty()) {
+                room.setRoomAvatar("/images/ENFP-竞选者.png");
+            } else {
+                room.setRoomAvatar(roomDTO.getRoomAvatar());
+            }
+            room.setDescription(roomDTO.getDescription());
+            room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+            room.incrementRoomPeopleCount();
+
+            // Save room first and flush to ensure persistence
+            room = roomRepository.saveAndFlush(room);
+
+            // Add the current user and receiver to the room
+            RoomMember roomMember = new RoomMember();
+            roomMember.setRoom(room);
+            roomMember.setUser(getCurrentUser());
+            roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+            roomMemberRepository.saveAndFlush(roomMember);
+
+            // Process tags
+            if (roomDTO.getTags() != null && !roomDTO.getTags().isEmpty()) {
+                for (String tagName : roomDTO.getTags()) {
+                    RoomTag roomTag = new RoomTag();
+                    roomTag.setRoom(room);
+                    roomTag.setTag(tagName);
+                    roomTag.setColor("white");
+                    room.getRoomTags().add(roomTag);
+
+                    roomTagRepository.saveAndFlush(roomTag);
+                }
+            }
+            return room;
+        }
+        return null;
     }
 
     public Response<String> joinRoom(RoomDTO roomDTO) {
