@@ -26,4 +26,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     @Query(value = "SELECT * FROM chat_room WHERE room_type = 'public' ORDER BY online_count DESC LIMIT 6", nativeQuery = true)
     List<Room> findTop6ByOnlineCount();
 
+
+
+
 }
