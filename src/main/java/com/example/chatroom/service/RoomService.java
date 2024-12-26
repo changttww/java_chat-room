@@ -87,8 +87,7 @@ public class RoomService {
         if ("private".equalsIgnoreCase(roomDTO.getRoomType()))
         {
             List<Room> privateRooms = roomRepository.findByRoomType("private");
-            if (!privateRooms.isEmpty())
-            {
+
                 for (Room existingRoom : privateRooms)
                 {
                     List<RoomMember> roomMembers = roomMemberRepository.findByRoom_RoomId(existingRoom.getRoomId());
@@ -103,32 +102,30 @@ public class RoomService {
                         return existingRoom;
                     }
                 }
+
+            Room room1 = new Room();
+            room1.setOwnerUid(currentUserId);
+            room1.setRoomType(roomDTO.getRoomType());
+            room1.incrementRoomPeopleCount();
+            room1.incrementRoomPeopleCount();
+            room1 = roomRepository.saveAndFlush(room1);
+            RoomMember roomMember1 = new RoomMember();
+            roomMember1.setRoom(room1);
+            Optional<User> userOptional = UserRepository.findById(roomDTO.getReceiverUid());
+            if (userOptional.isEmpty()) {
+                throw new RuntimeException("Receiver user not found");
             }
-            else
-            {
-                    Room room1 = new Room();
-                    room1.setOwnerUid(currentUserId);
-                    room1.setRoomType(roomDTO.getRoomType());
-                    room1.incrementRoomPeopleCount();
-                    room1.incrementRoomPeopleCount();
-                    room1 = roomRepository.saveAndFlush(room1);
-                    RoomMember roomMember1 = new RoomMember();
-                    roomMember1.setRoom(room1);
-                    Optional<User> userOptional = UserRepository.findById(roomDTO.getReceiverUid());
-                    if (userOptional.isEmpty()) {
-                        throw new RuntimeException("Receiver user not found");
-                    }
-                    roomMember1.setUser(userOptional.get());
-                    roomMember1.setJoinedAt(new Timestamp(System.currentTimeMillis()));
-                    roomMemberRepository.saveAndFlush(roomMember1);
-                    // Add the current user and receiver to the room
-                    RoomMember roomMember = new RoomMember();
-                    roomMember.setRoom(room1);
-                    roomMember.setUser(getCurrentUser());
-                    roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
-                    roomMemberRepository.saveAndFlush(roomMember);
-                    return room1;
-            }
+            roomMember1.setUser(userOptional.get());
+            roomMember1.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+            roomMemberRepository.saveAndFlush(roomMember1);
+            // Add the current user and receiver to the room
+            RoomMember roomMember = new RoomMember();
+            roomMember.setRoom(room1);
+            roomMember.setUser(getCurrentUser());
+            roomMember.setJoinedAt(new Timestamp(System.currentTimeMillis()));
+            roomMemberRepository.saveAndFlush(roomMember);
+            return room1;
+
         }
 
         else
@@ -172,7 +169,7 @@ public class RoomService {
             }
             return room;
         }
-        return null;
+
     }
 
     public Response<String> joinRoom(RoomDTO roomDTO) {
