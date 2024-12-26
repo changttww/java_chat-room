@@ -245,6 +245,8 @@ public class UserService {
         }
 
         User user = userOptional.get();
+        List<UserRelationship> ships = userRelationshipRepository.findByUser_Userid(user.getUserid());
+
 
         // 获取另一位用户 ID
         userOptional = userRepository.findByUserid(otherid);
@@ -255,14 +257,14 @@ public class UserService {
         User other = userOptional.get();
 
         // 查找并移除关系
-        Optional<UserRelationship> relationshipOptional = user.getRelationships().stream()
+        Optional<UserRelationship> relationshipOptional = ships.stream()
             .filter(relation -> relation.getOther().getUserid().equals(other.getUserid()) && "malo".equals(relation.getRelationshipType()))
             .findFirst();
 
         if (!relationshipOptional.isEmpty()) {
             UserRelationship relationship = relationshipOptional.get();
             // 从当前用户的关系列表中移除
-            user.getRelationships().remove(relationship);
+            //user.getRelationships().remove(relationship);
             // 从数据库中删除关系记录
             userRelationshipRepository.delete(relationship);
             // 保存更新后的用户信息
