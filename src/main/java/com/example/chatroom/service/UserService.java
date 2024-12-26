@@ -304,9 +304,10 @@ public class UserService {
 
         if (!relationshipExists&&other!=user) {
             // 将other添加到user的关系列表中
-            userRelationshipRepository.save(re);
-            //user.getRelationships().add(re);
             userRepository.save(user);
+            userRelationshipRepository.save(re);
+            user.getRelationships().add(re);
+
         } else {
             // 如果关系已存在，可以选择抛出异常或返回错误信息
             throw new Error("Invalid create relationship");
