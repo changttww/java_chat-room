@@ -145,6 +145,7 @@ public class RoomService {
             room.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
             room.incrementRoomPeopleCount();
 
+
             // Save room first and flush to ensure persistence
             room = roomRepository.saveAndFlush(room);
 
