@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface UserRelationshipRepository extends JpaRepository<UserRelationship, Integer> {
 
-    List<UserRelationship> findByUserUserid(Integer userid);
+    List<UserRelationship> findByUser_Userid(Integer userid);
 }

@@ -256,10 +256,10 @@ public class UserService {
 
         // 查找并移除关系
         Optional<UserRelationship> relationshipOptional = user.getRelationships().stream()
-            .filter(relation -> relation.getOther().equals(other) && "malo".equals(relation.getRelationshipType()))
+            .filter(relation -> relation.getOther().getUserid().equals(other.getUserid()) && "malo".equals(relation.getRelationshipType()))
             .findFirst();
 
-        if (relationshipOptional.isPresent()) {
+        if (!relationshipOptional.isEmpty()) {
             UserRelationship relationship = relationshipOptional.get();
             // 从当前用户的关系列表中移除
             user.getRelationships().remove(relationship);
@@ -295,6 +295,7 @@ public class UserService {
         }
 
         User other = userOptional.get();
+
         UserRelationship re = new UserRelationship(user,other,"malo","Un malo",new Timestamp(System.currentTimeMillis()));
 
         boolean relationshipExists = user.getRelationships().stream()
@@ -315,21 +316,22 @@ public class UserService {
         return Response.success("Villain added successfully", null);
     }
 
-    // 展示黑名单
-    public Response<List<UserRelationship>> getBlacklist() {
-        // 获取当前用户 ID
-        Integer currentUserId = getCurrentUserId();
-        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("Current user not found");
-        }
-
-        User user = userOptional.get();
-        List<UserRelationship> ships = user.getRelationships();
-
-        // 成功情况
-        return Response.success("Show villains successfully", ships);
+// 展示黑名单
+public Response<List<UserRelationship>> getBlacklist() {
+    // 获取当前用户 ID
+    Integer currentUserId = getCurrentUserId();
+    Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+    if (userOptional.isEmpty()) {
+        throw new RuntimeException("Current user not found");
     }
+
+    User user = userOptional.get();
+    // 使用UserRelationshipRepository调用findByUser_UserId方法
+    List<UserRelationship> ships = userRelationshipRepository.findByUser_Userid(user.getUserid());
+
+    // 成功情况
+    return Response.success("Show villains successfully", ships);
+}
 
 
 

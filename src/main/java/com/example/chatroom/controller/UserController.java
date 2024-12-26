@@ -188,7 +188,7 @@ public class UserController {
             return userService.removeVillain(otherid);
         } catch (Exception e) {
             // 如果发生错误，返回失败响应
-            return Response.error("Error set blacklist: " + e.getMessage());
+            return Response.error("Error remove blacklist: " + e.getMessage());
         }
     }
 
