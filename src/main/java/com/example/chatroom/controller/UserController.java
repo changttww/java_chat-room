@@ -192,7 +192,7 @@ public class UserController {
         }
     }
 
-    // 展示黑名单
+    // 获取黑名单
     @GetMapping("/getblacklist")
     public Response<List<UserRelationship>> getBlacklist() {
         Integer currentUserId = getCurrentUserId();
@@ -206,6 +206,23 @@ public class UserController {
         } catch (Exception e) {
             // 如果发生错误，返回失败响应
             return Response.error("Error get blacklist: " + e.getMessage());
+        }
+    }
+
+    // 获取黑名单成员列表
+    @GetMapping("/getblacklistuser")
+    public Response<List<User>> getBlacklistUser() {
+        Integer currentUserId = getCurrentUserId();
+        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        try {
+            return userService.getBlacklistUser();
+        } catch (Exception e) {
+            // 如果发生错误，返回失败响应
+            return Response.error("Error get blacklistuser: " + e.getMessage());
         }
     }
 
