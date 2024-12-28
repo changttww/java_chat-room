@@ -319,7 +319,7 @@ public class UserService {
         return Response.success("Villain added successfully", null);
     }
 
-// 展示黑名单
+// 黑名单
 public Response<List<UserRelationship>> getBlacklist() {
     // 获取当前用户 ID
     Integer currentUserId = getCurrentUserId();
@@ -334,6 +334,26 @@ public Response<List<UserRelationship>> getBlacklist() {
 
     // 成功情况
     return Response.success("Show villains successfully", ships);
+}
+
+// 黑名单成员列表
+public Response<List<User>> getBlacklistUser(Integer userid) {
+    // 获取当前用户 ID
+    Optional<User> userOptional = userRepository.findByUserid(userid);
+    if (userOptional.isEmpty()) {
+        throw new RuntimeException("Current user not found");
+    }
+
+    User user = userOptional.get();
+    // 使用UserRelationshipRepository调用findByUser_UserId方法
+    List<UserRelationship> ships = userRelationshipRepository.findByUser_Userid(user.getUserid());
+    List<User> us = new ArrayList<>();
+    for (UserRelationship ship : ships) {
+        us.add(ship.getOther()); // 直接访问other属性
+    }
+
+    // 成功情况
+    return Response.success("Show villains successfully", us);
 }
 
 
