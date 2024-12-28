@@ -337,10 +337,9 @@ public Response<List<UserRelationship>> getBlacklist() {
 }
 
 // 黑名单成员列表
-public Response<List<User>> getBlacklistUser() {
+public Response<List<User>> getBlacklistUser(Integer userid) {
     // 获取当前用户 ID
-    Integer currentUserId = getCurrentUserId();
-    Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+    Optional<User> userOptional = userRepository.findByUserid(userid);
     if (userOptional.isEmpty()) {
         throw new RuntimeException("Current user not found");
     }

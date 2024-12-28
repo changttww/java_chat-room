@@ -211,15 +211,15 @@ public class UserController {
 
     // 获取黑名单成员列表
     @GetMapping("/getblacklistuser")
-    public Response<List<User>> getBlacklistUser() {
-        Integer currentUserId = getCurrentUserId();
-        Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+    public Response<List<User>> getBlacklistUser(@RequestBody Map<String, Integer> request) {
+        Integer userid=request.get("userId");
+        Optional<User> userOptional = userRepository.findByUserid(userid);
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found");
         }
 
         try {
-            return userService.getBlacklistUser();
+            return userService.getBlacklistUser(userid);
         } catch (Exception e) {
             // 如果发生错误，返回失败响应
             return Response.error("Error get blacklistuser: " + e.getMessage());
