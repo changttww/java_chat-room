@@ -210,7 +210,7 @@ public class UserController {
     }
 
     // 获取黑名单成员列表
-    @GetMapping("/getblacklistuser")
+    @PostMapping("/getblacklistuser")
     public Response<List<User>> getBlacklistUser(@RequestBody Map<String, Integer> request) {
         Integer userid=request.get("userId");
         Optional<User> userOptional = userRepository.findByUserid(userid);
