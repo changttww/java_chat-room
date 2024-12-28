@@ -1,15 +1,9 @@
 package com.example.chatroom.service;
 
 import com.example.chatroom.common.response.Response;
+import com.example.chatroom.entity.*;
 import com.example.chatroom.entity.DTO.RoomDTO;
-import com.example.chatroom.entity.Room;
-import com.example.chatroom.entity.RoomMember;
-import com.example.chatroom.entity.RoomTag;
-import com.example.chatroom.entity.User;
-import com.example.chatroom.repository.RoomMemberRepository;
-import com.example.chatroom.repository.RoomRepository;
-import com.example.chatroom.repository.RoomTagRepository;
-import com.example.chatroom.repository.UserRepository;
+import com.example.chatroom.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +19,7 @@ import java.util.stream.Collectors;
 public class RoomService {
 
     @Autowired
-    private UserRepository UserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -35,7 +29,8 @@ public class RoomService {
 
     @Autowired
     private RoomTagRepository roomTagRepository;  // 注入 RoomTagRepository
-
+    @Autowired
+    private UserRelationshipRepository userRelationshipRepository;
 
 
     // 通过用户名获取用户ID
@@ -47,7 +42,7 @@ public class RoomService {
             String username = authentication.getName();  // 获取当前用户名
 
             // 通过用户名查询用户实体
-            Optional<User> userOptional = UserRepository.findByUsername(username);
+            Optional<User> userOptional = userRepository.findByUsername(username);
 
             if (userOptional.isPresent() ) {
                 User user = userOptional.get();
@@ -66,7 +61,7 @@ public class RoomService {
             String username = authentication.getName();  // 获取当前用户名
 
             // 通过用户名查询用户实体
-            Optional<User> userOptional = UserRepository.findByUsername(username);
+            Optional<User> userOptional = userRepository.findByUsername(username);
 
             if (userOptional.isPresent() ) {
                 User user = userOptional.get();
@@ -111,7 +106,7 @@ public class RoomService {
             room1 = roomRepository.saveAndFlush(room1);
             RoomMember roomMember1 = new RoomMember();
             roomMember1.setRoom(room1);
-            Optional<User> userOptional = UserRepository.findById(roomDTO.getReceiverUid());
+            Optional<User> userOptional = userRepository.findById(roomDTO.getReceiverUid());
             if (userOptional.isEmpty()) {
                 throw new RuntimeException("Receiver user not found");
             }
@@ -459,10 +454,39 @@ public class RoomService {
         List<RoomDTO> roomDTOs = new ArrayList<>();
         for (RoomMember roomMember : roomMembers) {
             Room room = roomMember.getRoom();
-            RoomDTO roomDTO = getRoomDetails(room.getRoomId());
-            roomDTOs.add(roomDTO);
-        }
+            boolean isbalck = true;
+            if(room.getRoomType() == "private")
+            {
+                List<RoomMember> roomMembers1 = roomMemberRepository.findByRoom_RoomId(room.getRoomId());
+                List<Integer> memberIds = roomMembers1.stream()
+                        .map(member -> member.getUser().getUserid())
+                        .toList();
 
+                Integer currentUserId = getCurrentUserId();
+                Optional<User> userOptional = userRepository.findByUserid(currentUserId);
+                if (userOptional.isEmpty()) {
+                    throw new RuntimeException("Current user not found");
+                }
+
+                User user = userOptional.get();
+                // 使用UserRelationshipRepository调用findByUser_UserId方法
+                List<UserRelationship> ships = userRelationshipRepository.findByUser_Userid(user.getUserid());
+
+                for(int memberId : memberIds)
+                {
+                    for(UserRelationship ship : ships)
+                    {
+                        User other = ship.getOther();;
+                        if(other.getUserid() == memberId) isbalck = false;
+                    }
+                }
+            }
+            if(isbalck == true)
+            {
+                RoomDTO roomDTO = getRoomDetails(room.getRoomId());
+                roomDTOs.add(roomDTO);
+            }
+        }
         return roomDTOs;
     }
 
