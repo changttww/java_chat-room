@@ -455,7 +455,7 @@ public class RoomService {
         for (RoomMember roomMember : roomMembers) {
             Room room = roomMember.getRoom();
             boolean isbalck = true;
-            if(room.getRoomType() == "private")
+            if(Objects.equals(room.getRoomType(), "private"))
             {
                 List<RoomMember> roomMembers1 = roomMemberRepository.findByRoom_RoomId(room.getRoomId());
                 List<Integer> memberIds = roomMembers1.stream()
@@ -477,11 +477,14 @@ public class RoomService {
                     for(UserRelationship ship : ships)
                     {
                         User other = ship.getOther();;
-                        if(other.getUserid() == memberId) isbalck = false;
+                        if (other.getUserid() == memberId) {
+                            isbalck = false;
+                            break;
+                        }
                     }
                 }
             }
-            if(isbalck == true)
+            if(isbalck)
             {
                 RoomDTO roomDTO = getRoomDetails(room.getRoomId());
                 roomDTOs.add(roomDTO);

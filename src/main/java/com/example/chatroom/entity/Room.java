@@ -14,7 +14,7 @@ public class Room {
     @Column(name = "room_id")
     private Integer roomId;
 
-    @Column(name = "room_name", nullable = false)
+    @Column(name = "room_name")
     private String roomName;
 
     @Column(name = "room_type", nullable = false)
