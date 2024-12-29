@@ -618,7 +618,7 @@
 ### **4. 实时消息推送模块**
 
 #### **4.1 建立 WebSocket 连接**
-- **连接路径：** `/ws/chat/{roomId}/{uid}`  
+- **连接路径：** `/ws/chat`  
 - **说明：** 客户端通过 WebSocket 协议连接到服务器，用于实时接收消息。
 
 #### **4.2 消息格式**
@@ -638,8 +638,8 @@
 }
 ```
 - **接收格式：**
-```json
-{
+  ```json
+  {
   "roomId": "123",
   "uid": "001",
   "type": "IMAGE",  // 消息类型可能是TEXT, IMAGE, EMOJI
@@ -654,42 +654,8 @@
   "sendTime": "2024-11-23T10:30:00"
   "userName":"UserA",
   "userAvatar":"...." // 用户头像的url
-}
-```
-
-#### **4.3 私聊创建通知**  
-- **连接路径：** `/ws/{uid}`
-- **发送格式：**
-```json
-{
-  "roomId": 123, // 私聊房间号
-  "uid": 1, // 发起私聊的人的UID
-  "type": "TEXT", 
-  "content": {
-    "text": "2", // 被私聊的对象的UID（转换为字符串）
-    "url": null, 
-    "meta": null 
-  },
-  "userName":"UserA", // 发起私聊的人的昵称
-  "userAvatar":"...." // 他的头像url
-}
-```
-- **接收格式：**
-```json
-{
-  "roomId": 123, //私聊房间号
-  "uid": 1, // 发起私聊的人的UID
-  "type": "TEXT",
-  "content": {
-    "text": "2", // 被私聊的对象的UID（转换为字符串）
-    "url": null,
-    "meta": null
-  },
-  "sendTime": "2024-11-23T10:30:00"
-  "userName":"UserA", // 发起私聊的人的昵称
-  "userAvatar":"...." // 他的头像url
-}
-```
+  }
+  ```
 
 ---
 

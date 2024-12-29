@@ -31,13 +31,6 @@ public class MessageService {
      * @return success null
      */
     public Message saveMessage(SendMessageVO sendMessageVO) {
-        Message message = convertSendMessageVO2Message(sendMessageVO);
-
-        messageRepository.saveAndFlush(message);
-        return message;
-    }
-
-    public Message convertSendMessageVO2Message(SendMessageVO sendMessageVO) {
         Message message = new Message();
         message.setRoomId(sendMessageVO.getRoomId());
         message.setUid(sendMessageVO.getUid());
@@ -47,6 +40,7 @@ public class MessageService {
         message.setUserName(sendMessageVO.getUserName());
         message.setUserAvatar(sendMessageVO.getUserAvatar());
 
+        messageRepository.saveAndFlush(message);
         return message;
     }
 
