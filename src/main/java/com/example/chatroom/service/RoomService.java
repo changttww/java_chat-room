@@ -182,7 +182,7 @@ public class RoomService {
             return Response.error("Invalid invite code");
         }
 
-        if("private".equals(roomDTO.getRoomType())){
+        if("private".equals(room.getRoomType())){
             return Response.error("You cannot join a private room");
         }
 
