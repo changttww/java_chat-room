@@ -272,6 +272,14 @@ public class RoomService {
         room.decrementRoomPeopleCount();
         roomRepository.save(room);
 
+        if(Objects.equals(room.getRoomType(), "private"))
+        {
+            // 删除房间
+            roomRepository.delete(room);
+        }
+
+
+
         return "Left room successfully";
     }
 
