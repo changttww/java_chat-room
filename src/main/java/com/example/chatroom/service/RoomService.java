@@ -182,6 +182,10 @@ public class RoomService {
             return Response.error("Invalid invite code");
         }
 
+        if("private".equals(roomDTO.getRoomType())){
+            return Response.error("You cannot join a private room");
+        }
+
 
         Integer currentUserId = getCurrentUserId();
         // 检查用户是否已经是房间成员
