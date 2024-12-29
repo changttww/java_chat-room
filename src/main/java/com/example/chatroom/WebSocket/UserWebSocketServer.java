@@ -58,6 +58,7 @@ public class UserWebSocketServer {
         int toUid = Integer.parseInt(sendMessageVO.getContent().getText());
         Message message1 = messageService.convertSendMessageVO2Message(sendMessageVO);
         sendMessageToUser(toUid, message1);
+        sendMessageToUser(uid, message1);
     }
 
     /**
